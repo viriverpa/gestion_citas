@@ -88,13 +88,20 @@ WSGI_APPLICATION = 'gestion_citas.wsgi.application'
 # ------------------------------
 # DATABASES
 # ------------------------------
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise Exception("🚫 La variable DATABASE_URL no está definida en el entorno.")
+
 DATABASES = {
     'default': dj_database_url.parse(
-        os.environ["DATABASE_URL"],  # ← esto obliga a usar la variable
+        DATABASE_URL,
         conn_max_age=600,
         ssl_require=True
     )
 }
+
+
 # ------------------------------
 # PASSWORD VALIDATION
 # ------------------------------
