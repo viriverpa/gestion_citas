@@ -1,5 +1,7 @@
 from pathlib import Path
 import os
+import dj_database_url
+
 
 # ------------------------------
 # BASE
@@ -9,14 +11,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ------------------------------
 # SEGURIDAD
 # ------------------------------
-SECRET_KEY = 'django-insecure-$bi34q5_o71fe7j&_9b5q*l608%+ycmstseavzupk3lm)&s-j0'
-DEBUG = True
+import os
+import dj_database_url
 
-ALLOWED_HOSTS = [
-    '192.168.1.64', 'localhost', '127.0.0.1',
-    'dentotis.com', 'www.dentotis.com'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'clave_local_insegura')
+
+DEBUG = os.environ.get('DEBUG', '') != 'False'
+
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{host}" for host in ALLOWED_HOSTS if host != 'localhost'
 ]
-CSRF_TRUSTED_ORIGINS = ['http://192.168.1.64']
+
 
 # ------------------------------
 # APLICACIONES
@@ -71,15 +78,9 @@ WSGI_APPLICATION = 'gestion_citas.wsgi.application'
 # ------------------------------
 # DATABASE
 # ------------------------------
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'gestion_citas_db',
-        'USER': 'gestion_user',
-        'PASSWORD': 'gestion_pass',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
 # ------------------------------
@@ -133,3 +134,13 @@ EMAIL_HOST_USER = 'fundacionnidodevida@gmail.com'
 EMAIL_HOST_PASSWORD = 'tjxj vhlq yjgp jczo'  # Usa clave de aplicación segura
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# ------------------------------
+# Archivos estáticos en producción
+# ------------------------------
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Activar almacenamiento de archivos estáticos solo en producción
+if not DEBUG:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
