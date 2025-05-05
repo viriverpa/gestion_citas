@@ -1,0 +1,19 @@
+# Entorno virtual
+venv_gestion/
+__pycache__/
+*.pyc
+
+# Archivos de Django
+db.sqlite3
+*.log
+
+# Archivos de configuración
+.env
+
+# Archivos estáticos recolectados
+staticfiles/
+
+# Archivos comprimidos o backups
+*.zip
+*.tar.gz
+*.bak

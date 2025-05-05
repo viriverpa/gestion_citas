@@ -11,19 +11,29 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ------------------------------
 # SEGURIDAD
 # ------------------------------
-import os
-import dj_database_url
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'clave_local_insegura')
-
 DEBUG = os.environ.get('DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+# Añadimos manualmente los dominios permitidos
+ALLOWED_HOSTS += ['www.dentotis.com', 'dentotis.com']
 
 CSRF_TRUSTED_ORIGINS = [
     f"https://{host}" for host in ALLOWED_HOSTS if host != 'localhost'
 ]
 
+# ------------------------------
+# Seguridad en HTTPS
+# ------------------------------
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 año
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 # ------------------------------
 # APLICACIONES
