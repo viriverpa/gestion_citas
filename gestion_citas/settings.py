@@ -86,13 +86,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'gestion_citas.wsgi.application'
 
 # ------------------------------
-# DATABASE
+# DATABASES
 # ------------------------------
-import dj_database_url
-
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
+        default="postgres://usuario:***@host:5432/dbname",
         conn_max_age=600,
         ssl_require=True
     )
