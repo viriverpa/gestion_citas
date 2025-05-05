@@ -85,13 +85,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'gestion_citas.wsgi.application'
 
-# ------------------------------
-# DATABASES
-# ------------------------------
+# Intenta obtener DATABASE_URL desde el entorno
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
+# Si no está definida (como está pasando en Railway), usar manualmente la conexión de Neon
 if not DATABASE_URL:
-    raise Exception("🚫 La variable DATABASE_URL no está definida en el entorno.")
+    DATABASE_URL = "postgresql://neondb_owner:npg_ScsgtRWm0Ew6@ep-bitter-shape-a4inklxr-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"
 
 DATABASES = {
     'default': dj_database_url.parse(
@@ -100,7 +99,6 @@ DATABASES = {
         ssl_require=True
     )
 }
-
 
 # ------------------------------
 # PASSWORD VALIDATION
