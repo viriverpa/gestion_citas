@@ -88,9 +88,14 @@ WSGI_APPLICATION = 'gestion_citas.wsgi.application'
 # ------------------------------
 # DATABASE
 # ------------------------------
+import dj_database_url
 
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3',
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 # ------------------------------
