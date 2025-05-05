@@ -1,0 +1,46 @@
+<!-- web/templates/web/gestionar_historia.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% load form_filters %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">🧑‍⚕️ Historia Clínica del Paciente: <strong>{{ paciente.nombre }}</strong></h2>
+
+    {% if mensaje_exito %}
+    <div class="alert alert-success">
+        {{ mensaje_exito }}
+        <div class="mt-3 text-end">
+            <a href="{% url 'panel_pacientes' %}" class="btn btn-primary">Volver al Panel de Pacientes</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="antecedentes" class="form-label">Antecedentes</label>
+            {{ form.antecedentes|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label for="medicamentos" class="form-label">Medicamentos</label>
+            {{ form.medicamentos|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label for="alergias" class="form-label">Alergias</label>
+            {{ form.alergias|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label for="observaciones" class="form-label">Observaciones</label>
+            {{ form.observaciones|add_class:"form-control" }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Guardar Historia</button>
+        <a href="/pacientes/" class="btn btn-volver ms-2">🔙 Volver</a>
+    </form>
+</div>
+{% endblock %}

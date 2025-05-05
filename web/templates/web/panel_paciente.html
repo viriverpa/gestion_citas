@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Bienvenido, {{ paciente.nombre }}</h2>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      Información Personal
+    </div>
+    <div class="card-body">
+      <p><strong>Cédula:</strong> {{ paciente.documento_id }}</p>
+      <p><strong>Email:</strong> {{ paciente.email }}</p>
+      <p><strong>Teléfono:</strong> {{ paciente.telefono }}</p>
+      <p><strong>País:</strong> {{ paciente.pais.name }}</p>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      Próximas Citas
+    </div>
+    <div class="card-body">
+      {% if citas %}
+        <ul class="list-group">
+          {% for cita in citas %}
+            <li class="list-group-item">
+              {{ cita.fecha_hora|date:"d M Y H:i" }} - {{ cita.tratamiento.nombre }}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No tienes citas programadas.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <a href="{% url 'crear_cita_paciente' %}" class="btn btn-primary">Agendar nueva cita</a>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load form_filters %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>✏️ Editar Paciente</h2>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            {{ form.nombre|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label for="documento_id" class="form-label">Documento</label>
+            {{ form.documento_id|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Correo electrónico</label>
+            {{ form.email|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label for="pais" class="form-label">País</label>
+            {{ form.pais|add_class:"form-select" }}
+        </div>
+
+        <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            {{ form.telefono|add_class:"form-control" }}
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-success">💾 Guardar Cambios</button>
+        </div>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'panel_pacientes' %}" class="btn btn-volver">🔙 Volver a Pacientes</a>
+    </div>
+</div>
+{% endblock %}

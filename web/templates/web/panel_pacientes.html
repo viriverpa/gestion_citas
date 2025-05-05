@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Pacientes Activos - Clínica Odontológica Dentotis Sede Norte y Sur{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {% if messages %}
+        <div class="mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">👥 Pacientes</h2>
+        <a href="{% url 'panel_admin' %}" class="btn btn-outline-primary">🔙 Volver al Panel</a>
+    </div>
+
+    <div class="mb-4 text-end">
+        <a href="{% url 'crear_paciente' %}" class="btn btn-outline-primary">➕ Nuevo Paciente</a>
+    </div>
+
+    <div class="mb-3 text-end">
+        <a href="{% url 'buscar_paciente' %}" class="btn btn-outline-primary">🔍 Buscar Paciente</a>
+    </div>
+
+    {% if pacientes %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for paciente in pacientes %}
+            <div class="col">
+                <div class="card paciente-card p-3">
+                    <h5 class="mb-1">{{ paciente.nombre }}</h5>
+                    <p class="mb-1"><strong>Documento:</strong> {{ paciente.documento_id }}</p>
+                    <p class="mb-1"><strong>Email:</strong> {{ paciente.email|default:"No registrado" }}</p>
+
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <a href="{% url 'editar_paciente' paciente.id %}" class="btn btn-outline-primary btn-sm">✏️ Editar</a>
+                        <a href="#" class="btn btn-outline-success btn-sm disabled">📅 Citas</a>
+                        <a href="{% url 'gestionar_historia' paciente.id %}" class="btn btn-outline-info btn-sm">📘 Historia</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            No hay pacientes registrados.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

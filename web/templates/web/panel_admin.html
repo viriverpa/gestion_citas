@@ -1,0 +1,125 @@
+<!-- web/templates/web/panel_admin.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administración - Clínica Odontológica Dentotis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background-color: #0072CE;
+        }
+        .navbar-brand, .nav-link, .btn {
+            color: white;
+        }
+        .card-option {
+            transition: transform 0.2s;
+        }
+        .card-option:hover {
+            transform: scale(1.05);
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Clínica Odontológica Dentotis Cede Norte y Sur</a>
+        <div>
+            <a class="btn btn-outline-light" href="{% url 'logout' %}">Cerrar Sesión</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Panel de Administración General</h2>
+    <div class="row g-4 justify-content-center">
+
+        {% if 'Administrador' in grupos or 'Especialistas' in grupos %}
+            <!-- Botón Pacientes -->
+            <div class="col-md-3">
+                <div class="card card-option text-center p-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Pacientes</h5>
+                        <p class="card-text">Registrar y gestionar pacientes.</p>
+                        <a href="/pacientes/" class="btn btn-primary">Entrar</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if 'Administrador' in grupos %}
+
+	    <!-- Botón Buscar pacientes -->
+            <div class="col-md-3">
+	        <div class="card card-option text-center p-4">
+	            <div class="card-body">
+	                <h5 class="card-title">Buscar Paciente</h5>
+	                <p class="card-text">Localiza un paciente por nombre o documento.</p>
+	                <a href="{% url 'buscar_paciente' %}" class="btn btn-primary">Buscar</a>
+	            </div>
+	        </div>
+	    </div>
+
+            <!-- Botón Citas -->
+            <div class="col-md-3">
+                <div class="card card-option text-center p-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Citas</h5>
+                        <p class="card-text">Programar y administrar citas.</p>
+                        <a href="/citas" class="btn btn-primary">Entrar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Historias Clínicas -->
+            <div class="col-md-3">
+                <div class="card card-option text-center p-4">
+                    <div class="card-body">
+		        <h5 class="card-title">Historias Clínicas</h5>
+		        <p class="card-text">Crear y actualizar historias por paciente.</p>
+		        <a href="{% url 'panel_pacientes' %}" class="btn btn-primary">Entrar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Reportes -->
+            <div class="col-md-3">
+                <div class="card card-option text-center p-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Reportes</h5>
+                        <p class="card-text">Visualizar estadísticas y reportes.</p>
+                        <a href="/reportes" class="btn btn-primary">Entrar</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if 'Especialistas' in grupos %}
+            <!-- Botón Panel Especialista -->
+            <div class="col-md-3">
+                <div class="card card-option text-center p-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Panel de Especialista</h5>
+                        <p class="card-text">Ver citas y gestionar pacientes.</p>
+                        <a href="{% url 'panel_especialista' %}" class="btn btn-success">Entrar</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
