@@ -85,6 +85,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'gestion_citas.wsgi.application'
 
+# ---------------------------------
+# DATA BASES
+# -------------------------------
+
 # Intenta obtener DATABASE_URL desde el entorno
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
