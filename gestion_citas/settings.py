@@ -34,7 +34,7 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 año
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    PREPEND_WWW = True
+#   PREPEND_WWW = True
 # ------------------------------
 # APLICACIONES
 # ------------------------------
