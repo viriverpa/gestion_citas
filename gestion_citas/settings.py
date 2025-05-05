@@ -34,7 +34,7 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 año
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-
+    PREPEND_WWW = True
 # ------------------------------
 # APLICACIONES
 # ------------------------------
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 # ------------------------------
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # <-- debe estar antes que otros middlewares
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -156,12 +157,18 @@ EMAIL_HOST_PASSWORD = 'tjxj vhlq yjgp jczo'  # Usa clave de aplicación segura
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # ------------------------------
-# Archivos estáticos en producción
+# ARCHIVOS ESTÁTICOS
 # ------------------------------
 STATIC_URL = '/static/'
 
+# Ruta de archivos estáticos en desarrollo
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'web/static'),
+]
+
+# Ruta donde se recopilan para producción
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Activar almacenamiento de archivos estáticos solo en producción
 if not DEBUG:
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
