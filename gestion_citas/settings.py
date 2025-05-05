@@ -89,13 +89,12 @@ WSGI_APPLICATION = 'gestion_citas.wsgi.application'
 # DATABASES
 # ------------------------------
 DATABASES = {
-    'default': dj_database_url.config(
-        default="postgres://usuario:***@host:5432/dbname",
+    'default': dj_database_url.parse(
+        os.environ["DATABASE_URL"],  # ← esto obliga a usar la variable
         conn_max_age=600,
         ssl_require=True
     )
 }
-
 # ------------------------------
 # PASSWORD VALIDATION
 # ------------------------------
