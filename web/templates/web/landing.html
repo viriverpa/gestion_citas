@@ -32,6 +32,25 @@
                 flex-direction: column; /* Alinear los elementos verticalmente */
                 justify-content: center; /* Centrar verticalmente el contenido */
             }
+        /* Ajustes para tabletas y pantallas más grandes */
+        @media (min-width: 769px) {
+            body {
+                display: flex; /* Convertir el body en un contenedor flex */
+                justify-content: center; /* Centra los elementos hijos directos horizontalmente (si hay varios) */
+                align-items: center; /* Centra los elementos hijos directos VERTICALMENTE */
+                min-height: 100vh; /* Asegura que el body ocupe al menos el 100% de la altura de la ventana */
+                margin: 0; /* Elimina el margen predeterminado del body */
+                width: 100%; /* Asegura que el body ocupe el 100% del ancho */
+            }
+            .login-card {
+                /* Elimina o ajusta los márgenes verticales si el body ya está centrando */
+                margin-top: auto;
+                margin-bottom: auto;
+                /* Asegura que la altura no se estire innecesariamente, permite que el contenido defina la altura */
+                height: auto;
+                min-height: auto; /* Deshacer el min-height de la media query anterior si se aplicara accidentalmente */
+            }
+        }
         }
         .logo {
             width: 150px;
