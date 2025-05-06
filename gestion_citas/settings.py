@@ -29,13 +29,14 @@ CSRF_TRUSTED_ORIGINS = [
 # ------------------------------
 # Seguridad en HTTPS
 if not DEBUG:
-    SECURE_SSL_REDIRECT = False  # Cambia de True a False
+    SECURE_SSL_REDIRECT = True  # Actívalo de nuevo
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    PREPEND = False
+    PREPEND_WWW = False  # NO forzar desde Django; Cloudflare ya lo hace
+
 # ------------------------------
 # APLICACIONES
 # ------------------------------
