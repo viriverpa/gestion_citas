@@ -18,7 +18,7 @@ DEBUG = os.environ.get('DEBUG', '') != 'False'
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Añadimos manualmente los dominios permitidos
-ALLOWED_HOSTS += ['www.dentotis.com', 'dentotis.com']
+ALLOWED_HOSTS += ['www.dentotis.com']
 
 CSRF_TRUSTED_ORIGINS = [
     f"https://{host}" for host in ALLOWED_HOSTS if host != 'localhost'
@@ -35,7 +35,7 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    PREPEND_WWW = False  # NO forzar desde Django; Cloudflare ya lo hace
+#   PREPEND_WWW = False  # NO forzar desde Django; Cloudflare ya lo hace
 
 # ------------------------------
 # APLICACIONES
