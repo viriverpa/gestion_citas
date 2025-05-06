@@ -10,15 +10,28 @@
         body {
             background-color: #f8f9fa;
         }
-	.login-card {
-	    width: 90%;
-	    max-width: 400px;
-	    margin: 5vh auto;
-	    padding: 30px;
-	    background: white;
-	    border-radius: 10px;
-	    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-	}
+        .login-card {
+            width: 90%; /* Mantener el ancho al 90% */
+            max-width: 400px; /* Mantener el ancho máximo en pantallas grandes */
+            margin: 5vh auto; /* Margen vertical adaptable */
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Ajustes para pantallas más pequeñas (móviles) */
+        @media (max-width: 768px) { /* Ajusta el valor de 768px según el tamaño en que quieres que empiece a aplicarse */
+            .login-card {
+                margin-top: 10vh; /* Aumenta el margen superior para más espacio en móvil */
+                margin-bottom: 10vh; /* Añade margen inferior */
+                height: auto; /* Permite que la tarjeta crezca verticalmente */
+                min-height: 80vh;  /* Ocupa al menos el 80% de la altura de la pantalla en vertical. Puedes ajustar este valor. */
+                display: flex;       /* Activar Flexbox */
+                flex-direction: column; /* Alinear los elementos verticalmente */
+                justify-content: center; /* Centrar verticalmente el contenido */
+            }
+        }
         .logo {
             width: 150px;
             display: block;
@@ -26,6 +39,7 @@
             margin-bottom: 20px;
         }
     </style>
+
 </head>
 <body>
 
