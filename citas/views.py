@@ -1,3 +1,2 @@
 from django.shortcuts import render
-
-# Create your views here.
+# Esta es una línea de prueba.
