@@ -19,7 +19,7 @@ class Paciente(models.Model):
         max_length=20,
         help_text="Escribe el número sin el código del país. Ej: 3001234567"
     )
-    clinica_creacion = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True, blank=True)
+    clinica_creacion = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"{self.nombre} ({self.documento_id})"
@@ -28,7 +28,7 @@ class Odontologo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nombre = models.CharField(max_length=100)
     especialidad = models.CharField(max_length=100)
-    clinica_asignada = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True, blank=True)
+    clinica_asignada = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"{self.nombre} ({self.especialidad})"
@@ -42,11 +42,11 @@ class Tratamiento(models.Model):
 
 class Cita(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
-    odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE, null=True, blank=True)
+    odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE)
     tratamiento = models.ForeignKey(Tratamiento, on_delete=models.SET_NULL, null=True)
     fecha_hora = models.DateTimeField()
     motivo_consulta = models.TextField(blank=True)
-    clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE, null=True, blank=True)
+    clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE)
     ESTADOS_CITA = [
         ('P', 'Pendiente'),
         ('T', 'Terminada'),
@@ -60,8 +60,8 @@ class HorarioAtencion(models.Model):
     dia_semana = models.IntegerField(help_text="1=Lunes ... 7=Domingo")
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
-    odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE, null=True, blank=True)
-    clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE, null=True, blank=True)
+    odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE)
+    clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.odontologo.nombre} - Día {self.dia_semana}: {self.hora_inicio} - {self.hora_fin}"
