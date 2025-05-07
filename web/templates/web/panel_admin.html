@@ -27,39 +27,41 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        /* Forzar apilamiento y ancho completo en celulares (< 576px) */
-        @media (max-width: 575px) {
-            .row {
-                /* Asegurar que la fila permite que los elementos se envuelvan a la siguiente línea */
-                flex-wrap: wrap !important;
-                /* Eliminar posibles márgenes negativos que g-4 pueda añadir a la fila en horizontal */
-                margin-left: 0;
-                margin-right: 0;
+        
+        /* Estilos para móviles (menos de 768px) */
+        @media (max-width: 767.98px) {
+            .container.my-5 {
+                padding-bottom: 20px;
             }
-            /* Seleccionar las columnas que son hijos directos de .row y tienen las clases de tarjeta */
-            .row > .col-12.col-md-3 {
-                /* Forzar que la columna ocupe el 100% del ancho disponible */
-                width: 100% !important;
-                /* Asegurar que la columna se comporte como un bloque y se apile */
-                display: block !important;
-                /* Eliminar la influencia de flex-basis y flex-grow/shrink de Bootstrap */
-                flex: 0 0 100% !important;
-                max-width: 100% !important; /* Asegurar que no haya un max-width que la limite */
-
-                /* Ajustar el padding horizontal de la columna para dejar un pequeño espacio a los lados */
-                padding-left: 15px !important; /* Puedes ajustar este valor */
-                padding-right: 15px !important; /* Puedes ajustar este valor */
-
-                /* Añadir margen en la parte inferior para separar las tarjetas cuando se apilan */
-                margin-bottom: 20px; /* Puedes ajustar este valor */
-                margin-top: 0; /* Asegurar que no haya margen superior */
-                margin-left: auto !important; /* Asegurar centrado horizontal si es necesario */
-                margin-right: auto !important;
+            
+            .row.g-4 {
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+                max-height: calc(100vh - 200px); /* Ajusta según necesidad */
+                -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+                padding-bottom: 20px;
             }
-            /* Asegurar que la tarjeta dentro de la columna ocupe el ancho completo de la columna (menos el padding) */
-            .row > .col-12.col-md-3 > .card {
-                width: 100% !important; /* La tarjeta ocupa el 100% del espacio de su columna padre */
-                /* La alineación del contenido dentro de la tarjeta ya debería estar bien con tu CSS existente */
+            
+            .row.g-4 > [class*="col-"] {
+                width: 100%;
+                max-width: 100%;
+                flex: 0 0 auto;
+                padding-left: 0;
+                padding-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .card {
+                margin: 0 10px; /* Pequeño margen a los lados */
+            }
+        }
+        
+        /* Estilos para tabletas (768px en adelante) */
+        @media (min-width: 768px) {
+            .row.g-4 {
+                display: flex;
+                flex-wrap: wrap;
             }
         }
     </style>
