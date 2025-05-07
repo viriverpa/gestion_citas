@@ -12,17 +12,30 @@ class Clinica(models.Model):
 class Paciente(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     documento_id = models.CharField(max_length=10, unique=True, verbose_name="Cédula o Documento")
-    nombre = models.CharField(max_length=100)
+    nombres = models.CharField(max_length=100)
+    apellidos = models.CharField(max_length=100)
     email = models.EmailField()
     pais = CountryField(blank_label='(Selecciona el país)')
     telefono = models.CharField(
         max_length=20,
         help_text="Escribe el número sin el código del país. Ej: 3001234567"
     )
-    clinica_creacion = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True)
+    clinica_creacion = models.ForeignKey('Clinica', on_delete=models.SET_NULL, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.user:
+            username = self.documento_id
+            if User.objects.filter(username=username).exists():
+                raise ValidationError("Ya existe un usuario con esa cédula.")
+            user = User.objects.create_user(username=username, password=self.documento_id)
+            user.first_name = self.nombres
+            user.last_name = self.apellidos
+            user.save()
+            self.user = user
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.nombre} ({self.documento_id})"
+        return f"{self.nombres} {self.apellidos} ({self.documento_id})"
 
 class Odontologo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
