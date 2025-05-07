@@ -1,14 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django_countries.fields import CountryField
-
-### NUEVO MODELO ###
-class Clinica(models.Model):
-    nombre = models.CharField(max_length=100)
-    direccion = models.TextField()
-
-    def __str__(self):
-        return self.nombre
+from django.contrib.auth.models import User
 
 class Paciente(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -20,7 +12,6 @@ class Paciente(models.Model):
         max_length=20,
         help_text="Escribe el número sin el código del país. Ej: 3001234567"
     )
-    clinica_creacion = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.nombre} ({self.documento_id})"
@@ -29,7 +20,6 @@ class Odontologo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nombre = models.CharField(max_length=100)
     especialidad = models.CharField(max_length=100)
-    clinica_asignada = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.nombre} ({self.especialidad})"
@@ -47,7 +37,6 @@ class Cita(models.Model):
     tratamiento = models.ForeignKey(Tratamiento, on_delete=models.SET_NULL, null=True)
     fecha_hora = models.DateTimeField()
     motivo_consulta = models.TextField(blank=True)
-    clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE)
 
     ESTADOS_CITA = [
         ('P', 'Pendiente'),
@@ -62,11 +51,9 @@ class HorarioAtencion(models.Model):
     dia_semana = models.IntegerField(help_text="1=Lunes ... 7=Domingo")
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
-    odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE)
-    clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.odontologo.nombre} - Día {self.dia_semana}: {self.hora_inicio} - {self.hora_fin}"
+        return f"Día {self.dia_semana}: {self.hora_inicio} - {self.hora_fin}"
 
 class HistoriaClinica(models.Model):
     paciente = models.OneToOneField(Paciente, on_delete=models.CASCADE)
