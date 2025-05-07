@@ -13,8 +13,8 @@ from django.utils.timezone import now
 from django.utils.crypto import get_random_string
 
 def landing(request):
-    if request.method == 'GET':
-        logout(request)
+    if request.user.is_authenticated:
+        logout(request)  # Solo cierra sesión si ya está logueado
 
     form = LoginForm()
 
@@ -42,8 +42,6 @@ def landing(request):
                 form.add_error(None, 'Documento o contraseña incorrectos.')
 
     return render(request, 'web/landing.html', {'form': form})
-
-
 @login_required
 def panel_admin(request):
     grupos = request.user.groups.values_list('name', flat=True)
