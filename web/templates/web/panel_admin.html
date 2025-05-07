@@ -34,18 +34,22 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Clínica Odontológica Dentotis Cede Norte y Sur</a>
-        <div class="d-flex">
-            <!-- Botón de búsqueda -->
-            <a class="btn btn-outline-light me-2" href="{% url 'buscar_paciente' %}" title="Buscar paciente">
-                🔍
-            </a>
+        <div>
             <a class="btn btn-outline-light" href="{% url 'logout' %}">Cerrar Sesión</a>
         </div>
     </div>
 </nav>
 
 <div class="container my-5">
-    <h2 class="text-center mb-4">Panel de Administración General</h2>
+
+    <!-- Título y botón de búsqueda alineado a la derecha -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <h2 class="text-start">Panel de Administración General</h2>
+        <div class="d-flex flex-column align-items-end">
+            <a href="{% url 'buscar_paciente' %}" class="btn btn-outline-primary">Buscar Paciente</a>
+        </div>
+    </div>
+
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
 
         {% if 'Administrador' in grupos or 'Especialistas' in grupos %}
