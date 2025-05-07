@@ -42,7 +42,7 @@ class Tratamiento(models.Model):
 
 class Cita(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
-    odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE)
+    odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE, null=True, blank=True)
     tratamiento = models.ForeignKey(Tratamiento, on_delete=models.SET_NULL, null=True)
     fecha_hora = models.DateTimeField()
     motivo_consulta = models.TextField(blank=True)
@@ -60,7 +60,7 @@ class HorarioAtencion(models.Model):
     dia_semana = models.IntegerField(help_text="1=Lunes ... 7=Domingo")
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
-    odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE)
+    odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE, null=True, blank=True)
     clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
