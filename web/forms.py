@@ -4,6 +4,8 @@ from django import forms
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
 from citas.models import Paciente
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 class LoginForm(forms.Form):
     documento = forms.CharField(
@@ -48,3 +50,23 @@ class BusquedaPacienteForm(forms.Form):
             'placeholder': 'Nombre o documento...'
         })
     )
+
+class PacienteForm(forms.ModelForm):
+    class Meta:
+        model = Paciente
+        fields = ['nombre', 'documento_id', 'email', 'pais', 'telefono']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre completo'}),
+            'documento_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número de documento'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
+            'pais': forms.Select(attrs={'class': 'form-select'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono (sin código de país)'}),
+        }
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if Paciente.objects.filter(email=email).exists():
+            raise ValidationError("Ya existe un paciente con este correo.")
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Este correo ya está registrado como usuario.")
+        return email

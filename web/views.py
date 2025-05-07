@@ -4,9 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.http import HttpResponse
-from .forms import LoginForm, HistoriaClinicaForm
-from .forms import PacienteEditForm
-from .forms import BusquedaPacienteForm
+from .forms import LoginForm, HistoriaClinicaForm, BusquedaPacienteForm, PacienteForm, PacienteEditForm
 from citas.models import Cita, HistoriaClinica, Paciente
 from datetime import datetime
 from django.db.models import Q
@@ -16,7 +14,7 @@ from django.utils.crypto import get_random_string
 
 def landing(request):
     if request.method == 'GET':
-        logout(request)  # Limpia sesión previa
+        logout(request)
 
     form = LoginForm()
 
@@ -62,7 +60,6 @@ def panel_especialista(request):
     ).order_by('fecha_hora')
 
     return render(request, 'web/panel_especialista.html', {'citas': citas})
-
 
 
 @login_required
@@ -115,10 +112,11 @@ def logout_view(request):
     logout(request)
     return redirect('landing')
 
-login_required
+
+@login_required
 def crear_paciente(request):
     if request.method == 'POST':
-        form = PacienteEditForm(request.POST)
+        form = PacienteForm(request.POST)
         if form.is_valid():
             paciente = form.save(commit=False)
 
@@ -126,7 +124,6 @@ def crear_paciente(request):
             email = form.cleaned_data['email']
             nombre = form.cleaned_data['nombre']
 
-            from django.utils.crypto import get_random_string
             clave_generada = get_random_string(length=10)
 
             user = User.objects.create_user(
@@ -164,14 +161,13 @@ def crear_paciente(request):
 
             return redirect('panel_pacientes')
     else:
-        form = PacienteEditForm()
+        form = PacienteForm()
 
     return render(request, 'web/crear_paciente.html', {'form': form})
 
 
 @login_required
 def editar_paciente(request, paciente_id):
-    from .forms import PacienteEditForm
     paciente = get_object_or_404(Paciente, id=paciente_id)
 
     if request.method == 'POST':
@@ -183,6 +179,7 @@ def editar_paciente(request, paciente_id):
         form = PacienteEditForm(instance=paciente)
 
     return render(request, 'web/editar_paciente.html', {'form': form, 'paciente': paciente})
+
 
 @login_required
 def gestionar_historia(request, paciente_id):
@@ -213,9 +210,11 @@ def gestionar_historia(request, paciente_id):
 def crear_historia_clinica(request, paciente_id):
     return HttpResponse("Crear historia clínica en construcción.")
 
+
 @login_required
 def ver_fotos_tratamiento(request, paciente_id):
     return HttpResponse("Aquí se mostrarán las fotos del tratamiento del paciente.")
+
 
 @login_required
 def subir_foto_tratamiento(request, paciente_id):
@@ -238,22 +237,21 @@ def buscar_paciente(request):
         'pacientes': pacientes
     })
 
+
 @login_required
 def crear_cita_paciente(request):
     return HttpResponse("<h3>Aquí pronto podrás agendar tu cita eligiendo fecha y hora disponibles.</h3>")
 
-from .forms import PacienteEditForm  # si no está ya
 
 def registro_paciente(request):
     if request.method == 'POST':
-        form = PacienteEditForm(request.POST)
+        form = PacienteForm(request.POST)
         if form.is_valid():
             paciente = form.save(commit=False)
             documento = form.cleaned_data['documento_id']
             email = form.cleaned_data['email']
             nombre = form.cleaned_data['nombre']
 
-            from django.utils.crypto import get_random_string
             clave_generada = get_random_string(length=10)
 
             user = User.objects.create_user(
@@ -285,7 +283,6 @@ def registro_paciente(request):
             messages.success(request, f"¡Cuenta creada! Revisa tu correo para la contraseña.")
             return redirect('landing')
     else:
-        form = PacienteEditForm()
+        form = PacienteForm()
 
     return render(request, 'web/registro_paciente.html', {'form': form})
-
