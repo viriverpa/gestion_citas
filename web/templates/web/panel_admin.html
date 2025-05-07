@@ -1,4 +1,3 @@
-<!-- web/templates/web/panel_admin.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -27,6 +26,11 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        @media (max-width: 767.98px) {
+            .card-option {
+                min-width: 90vw;
+            }
+        }
     </style>
 </head>
 <body>
@@ -42,73 +46,72 @@
 
 <div class="container my-5">
     <h2 class="text-center mb-4">Panel de Administración General</h2>
-    <!-- 👇 Esta fila es ahora completamente responsiva -->
-    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
 
         {% if 'Administrador' in grupos or 'Especialistas' in grupos %}
-            <div class="col">
-                <div class="card card-option text-center p-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Pacientes</h5>
-                        <p class="card-text">Registrar y gestionar pacientes.</p>
-                        <a href="/pacientes/" class="btn btn-primary">Entrar</a>
-                    </div>
+        <div class="col">
+            <div class="card card-option text-center p-4">
+                <div class="card-body">
+                    <h5 class="card-title">Pacientes</h5>
+                    <p class="card-text">Registrar y gestionar pacientes.</p>
+                    <a href="/pacientes/" class="btn btn-primary">Entrar</a>
                 </div>
             </div>
+        </div>
         {% endif %}
 
         {% if 'Administrador' in grupos %}
-            <div class="col">
-                <div class="card card-option text-center p-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Buscar Paciente</h5>
-                        <p class="card-text">Localiza un paciente por nombre o documento.</p>
-                        <a href="{% url 'buscar_paciente' %}" class="btn btn-primary">Buscar</a>
-                    </div>
+        <div class="col">
+            <div class="card card-option text-center p-4">
+                <div class="card-body">
+                    <h5 class="card-title">Buscar Paciente</h5>
+                    <p class="card-text">Localiza un paciente por nombre o documento.</p>
+                    <a href="{% url 'buscar_paciente' %}" class="btn btn-primary">Buscar</a>
                 </div>
             </div>
+        </div>
 
-            <div class="col">
-                <div class="card card-option text-center p-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Citas</h5>
-                        <p class="card-text">Programar y administrar citas.</p>
-                        <a href="/citas" class="btn btn-primary">Entrar</a>
-                    </div>
+        <div class="col">
+            <div class="card card-option text-center p-4">
+                <div class="card-body">
+                    <h5 class="card-title">Citas</h5>
+                    <p class="card-text">Programar y administrar citas.</p>
+                    <a href="/citas" class="btn btn-primary">Entrar</a>
                 </div>
             </div>
+        </div>
 
-            <div class="col">
-                <div class="card card-option text-center p-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Historias Clínicas</h5>
-                        <p class="card-text">Crear y actualizar historias por paciente.</p>
-                        <a href="{% url 'panel_pacientes' %}" class="btn btn-primary">Entrar</a>
-                    </div>
+        <div class="col">
+            <div class="card card-option text-center p-4">
+                <div class="card-body">
+                    <h5 class="card-title">Historias Clínicas</h5>
+                    <p class="card-text">Crear y actualizar historias por paciente.</p>
+                    <a href="{% url 'panel_pacientes' %}" class="btn btn-primary">Entrar</a>
                 </div>
             </div>
+        </div>
 
-            <div class="col">
-                <div class="card card-option text-center p-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Reportes</h5>
-                        <p class="card-text">Visualizar estadísticas y reportes.</p>
-                        <a href="/reportes" class="btn btn-primary">Entrar</a>
-                    </div>
+        <div class="col">
+            <div class="card card-option text-center p-4">
+                <div class="card-body">
+                    <h5 class="card-title">Reportes</h5>
+                    <p class="card-text">Visualizar estadísticas y reportes.</p>
+                    <a href="/reportes" class="btn btn-primary">Entrar</a>
                 </div>
             </div>
+        </div>
         {% endif %}
 
         {% if 'Especialistas' in grupos %}
-            <div class="col">
-                <div class="card card-option text-center p-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Panel de Especialista</h5>
-                        <p class="card-text">Ver citas y gestionar pacientes.</p>
-                        <a href="{% url 'panel_especialista' %}" class="btn btn-success">Entrar</a>
-                    </div>
+        <div class="col">
+            <div class="card card-option text-center p-4">
+                <div class="card-body">
+                    <h5 class="card-title">Panel de Especialista</h5>
+                    <p class="card-text">Ver citas y gestionar pacientes.</p>
+                    <a href="{% url 'panel_especialista' %}" class="btn btn-success">Entrar</a>
                 </div>
             </div>
+        </div>
         {% endif %}
 
     </div>
