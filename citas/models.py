@@ -46,8 +46,7 @@ class Cita(models.Model):
     tratamiento = models.ForeignKey(Tratamiento, on_delete=models.SET_NULL, null=True)
     fecha_hora = models.DateTimeField()
     motivo_consulta = models.TextField(blank=True)
-    clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE)
-
+    clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE, null=True, blank=True)
     ESTADOS_CITA = [
         ('P', 'Pendiente'),
         ('T', 'Terminada'),
@@ -62,7 +61,7 @@ class HorarioAtencion(models.Model):
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
     odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE)
-    clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE)
+    clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.odontologo.nombre} - Día {self.dia_semana}: {self.hora_inicio} - {self.hora_fin}"
