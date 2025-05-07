@@ -1,4 +1,4 @@
-<!-- web/templates/web/panel_admin.html ---->
+<!-- web/templates/web/panel_admin.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -34,7 +34,11 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Clínica Odontológica Dentotis Cede Norte y Sur</a>
-        <div>
+        <div class="d-flex">
+            <!-- Botón de búsqueda -->
+            <a class="btn btn-outline-light me-2" href="{% url 'buscar_paciente' %}" title="Buscar paciente">
+                🔍
+            </a>
             <a class="btn btn-outline-light" href="{% url 'logout' %}">Cerrar Sesión</a>
         </div>
     </div>
@@ -42,7 +46,6 @@
 
 <div class="container my-5">
     <h2 class="text-center mb-4">Panel de Administración General</h2>
-    <!-- 👇 Esta fila es ahora completamente responsiva -->
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
 
         {% if 'Administrador' in grupos or 'Especialistas' in grupos %}
@@ -61,29 +64,9 @@
             <div class="col">
                 <div class="card card-option text-center p-4">
                     <div class="card-body">
-                        <h5 class="card-title">Buscar Paciente</h5>
-                        <p class="card-text">Localiza un paciente por nombre o documento.</p>
-                        <a href="{% url 'buscar_paciente' %}" class="btn btn-primary">Buscar</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card card-option text-center p-4">
-                    <div class="card-body">
                         <h5 class="card-title">Citas</h5>
                         <p class="card-text">Programar y administrar citas.</p>
                         <a href="/citas" class="btn btn-primary">Entrar</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card card-option text-center p-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Historias Clínicas</h5>
-                        <p class="card-text">Crear y actualizar historias por paciente.</p>
-                        <a href="{% url 'panel_pacientes' %}" class="btn btn-primary">Entrar</a>
                     </div>
                 </div>
             </div>
