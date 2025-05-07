@@ -8,76 +8,69 @@
     <title>Ingreso a la Plataforma</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            /* min-height: 100vh; */ /* Definiremos min-height en body */
+        }
+    
         body {
             background-color: #f8f9fa;
-            /* Asegura que el body ocupe la altura mínima necesaria para el centrado,
-               pero solo si la media query de centrado no aplica aún */
-            min-height: 100vh; /* <-- Agregar esto aquí para que el body siempre tenga altura */
-            margin: 0; /* <-- Asegurar margen 0 */
-            width: 100%; /* <-- Asegurar ancho 100% */
+            min-height: 100vh; /* Asegura que el body tenga al menos la altura de la ventana */
+            /* Por defecto, body es display: block */
         }
-         /* Reglas generales para la tarjeta (se aplican siempre a menos que una media query las anule) */
+    
+        /* Reglas generales para la tarjeta (base styles) */
         .login-card {
-            width: 90%; /* Mantener el ancho al 90% */
-            max-width: 400px; /* Mantener el ancho máximo en pantallas grandes */
-            /* margin: 5vh auto; */ /* <-- Quitar este margen vertical general, el centrado lo manejará mejor */
+            width: 90%;
+            max-width: 400px; /* El ancho máximo se mantiene para pantallas grandes */
             padding: 30px;
             background: white;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
     
-            /* Añadir flexbox y alineación aquí para el centrado del contenido dentro de la tarjeta */
+            /* Centrado del contenido DENTRO de la tarjeta (siempre activo) */
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Centra verticalmente el contenido DENTRO de la tarjeta */
-            align-items: center; /* Centra horizontalmente el contenido DENTRO de la tarjeta si es más estrecho */
+            justify-content: center; /* Centra el contenido verticalmente dentro de .login-card */
+            align-items: center; /* Centra el contenido horizontalmente dentro de .login-card */
+            text-align: center; /* Centra el texto si es necesario */
         }
     
-        /* Ajustes Específicos para pantallas más pequeñas (móviles) */
+        /* Ajustes Específicos para pantallas pequeñas (móviles y tablet vertical si es <= 768px) */
         @media (max-width: 768px) {
             .login-card {
-                /* Puedes mantener o ajustar estos si son necesarios solo para móviles */
-                /* margin-top: 10vh; */ /* Ajusta según necesites */
-                /* margin-bottom: 10vh; *//* Ajusta según necesites */
-                min-height: 80vh;  /* Puedes mantener este min-height si quieres que sea más alto en móviles */
-                 /* display, flex-direction, justify-content, align-items ya definidos arriba, no necesitas repetirlos a menos que cambien */
+                 /* Posiciona la tarjeta usando márgenes en pantallas pequeñas */
+                 margin: 5vh auto; /* Margen superior/inferior y centrado horizontal automático */
+                 min-height: 80vh; /* Mantiene la altura mínima de 80vh en móviles */
+                 /* El contenido dentro ya se centra con las reglas generales de .login-card */
             }
-        } /* <-- CIERRA la media query de max-width */
+            /* En pantallas pequeñas, el body no necesita ser flex para centrar la tarjeta; margin: auto es suficiente horizontalmente */
+        }
     
-        /* Ajustes Específicos para tabletas y pantallas más grandes (PARA CENTRAR LA TARJETA EN LA PANTALLA) */
+        /* Ajustes Específicos para tabletas y pantallas más grandes (>= 769px) */
         @media (min-width: 769px) {
-             /* No necesitas reglas para body o .login-card aquí si ya las definiste arriba para el centrado del contenido.
-                La regla display:flex y align-items: center en el body (fuera de media queries o en esta) Y
-                las reglas display:flex/justify-content/align-items en .login-card
-                deberían ser suficientes con el min-height: 100vh en body.
-    
-                Vamos a simplificar la lógica. Centra el body, y asegura que la tarjeta no se estire.
-             */
             body {
-                 display: flex; /* Habilitar flex en body */
-                 justify-content: center; /* Centrar hijos horizontalmente */
-                 align-items: center; /* Centrar hijos VERTICALMENTE */
-                 min-height: 100vh; /* Asegurar altura del body */
-                 margin: 0;
-                 width: 100%;
+                 display: flex; /* Convertir el body en flexbox para centrar su contenido (la tarjeta) */
+                 justify-content: center; /* Centra los elementos hijos directos (la tarjeta) horizontalmente */
+                 align-items: center; /* Centra los elementos hijos directos (la tarjeta) VERTICALMENTE */
+                 /* min-height: 100vh; ya está en body */
             }
             .login-card {
-                 /* En pantallas grandes, la altura debe ser automática según el contenido */
-                 height: auto;
-                 min-height: auto;
-                 margin-top: auto; /* Que los márgenes se ajusten automáticamente para centrado */
-                 margin-bottom: auto;
-                 /* display, flex-direction, justify-content, align-items ya definidos arriba,
-                    probablemente no necesiten cambios aquí a menos que quieras un layout diferente solo en desktop/tablet */
+                 /* Cuando el body es flex y centra la tarjeta, no necesitas márgenes específicos */
+                 margin: auto; /* Permite que flexbox y auto margins hagan el centrado */
+                 height: auto; /* La altura de la tarjeta se basa en su contenido */
+                 min-height: auto; /* No fuerza una altura mínima excesiva en pantallas grandes */
+                 /* display, flex-direction, justify-content, align-items para el contenido ya definidos en reglas generales */
             }
-        } /* <-- CIERRA la media query de min-width */
+        }
     
         /* Regla para el logo (se aplica siempre a menos que una media query la anule) */
         .logo {
-            width: 150px !important; /* Mantenemos !important por ahora para asegurar que se aplique si el CSS se parsea */
-            display: block;
-            margin: auto;
-            margin-bottom: 20px;
+            width: 150px; /* Quitamos !important, ya no debería ser necesario si el CSS se parsea */
+            display: block; /* Hace que la imagen se comporte como un bloque para que margin: auto funcione */
+            margin: 0 auto 20px auto; /* Centra el logo horizontalmente y le da margen inferior */
         }
     </style>
 
