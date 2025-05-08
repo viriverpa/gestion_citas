@@ -120,7 +120,9 @@ def crear_paciente(request):
 
             documento = form.cleaned_data['documento_id']
             email = form.cleaned_data['email']
-            nombre = form.cleaned_data['nombre']
+            nombres = form.cleaned_data['nombres']
+            apellidos = form.cleaned_data['apellidos']
+            nombre_completo = f"{nombres} {apellidos}"
 
             clave_generada = get_random_string(length=10)
 
@@ -128,7 +130,8 @@ def crear_paciente(request):
                 username=documento,
                 password=clave_generada,
                 email=email,
-                first_name=nombre
+                first_name=nombres,
+                last_name=apellidos,
             )
 
             grupo, _ = Group.objects.get_or_create(name='Pacientes')
@@ -140,7 +143,7 @@ def crear_paciente(request):
             send_mail(
                 subject='Tu cuenta ha sido creada en Clínica Dentotis',
                 message=(
-                    f"Hola {nombre},\n\n"
+                    f"Hola {nombre_completo},\n\n"
                     f"Tu cuenta ha sido creada exitosamente.\n\n"
                     f"Usuario: {documento}\n"
                     f"Contraseña temporal: {clave_generada}\n\n"
@@ -162,7 +165,6 @@ def crear_paciente(request):
         form = PacienteForm()
 
     return render(request, 'web/crear_paciente.html', {'form': form})
-
 
 @login_required
 def editar_paciente(request, pk=None):
