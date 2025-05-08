@@ -236,14 +236,15 @@ def buscar_paciente(request):
     if form.is_valid():
         q = form.cleaned_data['query']
         pacientes = Paciente.objects.filter(
-            Q(nombre__icontains=q) | Q(documento_id__icontains=q)
-        ).order_by('nombre')
+            Q(nombres__icontains=q) |
+            Q(apellidos__icontains=q) |
+            Q(documento_id__icontains=q)
+        ).order_by('apellidos', 'nombres')
 
     return render(request, 'web/buscar_paciente.html', {
         'form': form,
         'pacientes': pacientes
     })
-
 
 @login_required
 def crear_cita_paciente(request):
