@@ -13,6 +13,8 @@
       <p><strong>Email:</strong> {{ paciente.email }}</p>
       <p><strong>Teléfono:</strong> {{ paciente.telefono }}</p>
       <p><strong>País:</strong> {{ paciente.pais.name }}</p>
+
+      <a href="{% url 'editar_paciente' %}" class="btn btn-outline-primary mt-3">✏️ Editar mi información</a>
     </div>
   </div>
 
@@ -35,6 +37,6 @@
     </div>
   </div>
 
-  <a href="{% url 'crear_cita_paciente' %}" class="btn btn-primary">Agendar nueva cita</a>
+  <a href="{% url 'crear_cita_paciente' %}" class="btn btn-primary">📅 Agendar nueva cita</a>
 </div>
 {% endblock %}
