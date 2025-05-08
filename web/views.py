@@ -166,6 +166,7 @@ def crear_paciente(request):
 
 @login_required
 def editar_paciente(request, pk=None):
+    # Si es un paciente, edita su propio perfil
     if request.user.groups.filter(name='Pacientes').exists():
         paciente = get_object_or_404(Paciente, user=request.user)
     else:
@@ -179,8 +180,12 @@ def editar_paciente(request, pk=None):
             return redirect('panel_paciente') if request.user.groups.filter(name='Pacientes').exists() else redirect('panel_pacientes')
     else:
         form = PacienteEditForm(instance=paciente)
+        es_paciente = request.user.groups.filter(name='Pacientes').exists()
+        return render(request, 'web/editar_paciente.html', {
+            'form': form,
+            'es_paciente': es_paciente
+        })
 
-    return render(request, 'web/editar_paciente.html', {'form': form})
 
 
 @login_required

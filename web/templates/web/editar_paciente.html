@@ -39,10 +39,11 @@
         </div>
     </form>
 
-    {% if not request.user.groups.filter(name='Pacientes').exists %}
-    <div class="text-center mt-4">
-        <a href="{% url 'panel_pacientes' %}" class="btn btn-volver">🔙 Volver a Pacientes</a>
-    </div>
+    {% if not es_paciente %}
+        <div class="text-center mt-4">
+                <a href="{% url 'panel_pacientes' %}" class="btn btn-volver">🔙 Volver a Pacientes</a>
+        </div>
     {% endif %}
+
 </div>
 {% endblock %}
