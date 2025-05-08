@@ -27,7 +27,7 @@
                     <p class="mb-1"><strong>Email:</strong> {{ paciente.email|default:"No registrado" }}</p>
 
                     <div class="d-flex flex-wrap gap-2 mt-3">
-                        <a href="{% url 'editar_paciente' paciente.id %}" class="btn btn-outline-primary btn-sm">✏️ Editar</a>
+                        <a href="{% url 'editar_paciente_admin' paciente.id %}" class="btn btn-outline-primary btn-sm">✏️ Editar</a>
                         <a href="#" class="btn btn-outline-success btn-sm disabled">📅 Citas</a>
                         <a href="{% url 'gestionar_historia' paciente.id %}" class="btn btn-outline-info btn-sm">📘 Historia</a>
                     </div>
