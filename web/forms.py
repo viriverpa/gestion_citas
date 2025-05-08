@@ -55,9 +55,10 @@ class BusquedaPacienteForm(forms.Form):
 class PacienteForm(forms.ModelForm):
     class Meta:
         model = Paciente
-        fields = ['nombre', 'documento_id', 'email', 'pais', 'telefono']
+        fields = ['nombres', 'apellidos', 'documento_id', 'email', 'pais', 'telefono']
         widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre completo'}),
+            'nombres': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombres'}),
+            'apellidos': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellidos'}),
             'documento_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número de documento'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
             'pais': forms.Select(attrs={'class': 'form-select'}),
