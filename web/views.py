@@ -101,7 +101,7 @@ def ver_historia(request, paciente_id):
 
 @login_required
 def panel_pacientes(request):
-    pacientes = Paciente.objects.all().order_by('nombre')
+    pacientes = Paciente.objects.all().order_by('apellidos', 'nombres')
     return render(request, 'web/panel_pacientes.html', {'pacientes': pacientes})
 
 
