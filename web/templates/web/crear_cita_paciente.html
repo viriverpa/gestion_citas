@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">🗓️ Agendar nueva cita</h2>
+
+  <div class="mb-4">
+    <p><strong>Paciente:</strong> {{ paciente.nombres }} {{ paciente.apellidos }}</p>
+    <p><strong>Clínica:</strong> {{ paciente.clinica_creacion.nombre }}</p>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label for="odontologo" class="form-label">Odontólogo</label>
+      <select name="odontologo" class="form-select" required>
+        <option value="" selected disabled>Selecciona un odontólogo</option>
+        {% for o in odontologos %}
+          <option value="{{ o.id }}">{{ o.nombre }} - {{ o.especialidad }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="tratamiento" class="form-label">Tratamiento</label>
+      <select name="tratamiento" class="form-select" required>
+        <option value="" selected disabled>Selecciona un tratamiento</option>
+        {% for t in tratamientos %}
+          <option value="{{ t.id }}">{{ t.nombre }} ({{ t.duracion }} min)</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Aquí podrás agregar calendario de fechas en el futuro -->
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-primary">Continuar</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

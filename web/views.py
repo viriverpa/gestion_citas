@@ -5,12 +5,15 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.http import HttpResponse
 from .forms import LoginForm, HistoriaClinicaForm, BusquedaPacienteForm, PacienteForm, PacienteEditForm
-from citas.models import Cita, HistoriaClinica, Paciente
+from citas.models import Cita, HistoriaClinica, Paciente, Odontologo, Tratamiento
 from datetime import datetime
 from django.db.models import Q
 from django.core.mail import send_mail
 from django.utils.timezone import now
 from django.utils.crypto import get_random_string
+from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404
+
 
 def landing(request):
     if request.user.is_authenticated:
@@ -250,26 +253,31 @@ def buscar_paciente(request):
 
 @login_required
 def crear_cita_paciente(request):
-    return HttpResponse("<h3>Aquí pronto podrás agendar tu cita eligiendo fecha y hora disponibles.</h3>")
+    paciente = get_object_or_404(Paciente, user=request.user)
+    clinica = paciente.clinica_creacion
 
+    odontologos = Odontologo.objects.filter(clinica_asignada=clinica)
+    tratamientos = Tratamiento.objects.all()
 
-from django.utils.crypto import get_random_string
-from django.contrib.auth.models import User, Group
-from django.core.mail import send_mail
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from .forms import PacienteForm
+    return render(request, 'web/crear_cita_paciente.html', {
+        'paciente': paciente,
+        'odontologos': odontologos,
+        'tratamientos': tratamientos,
+    })
 
 def registro_paciente(request):
     if request.method == 'POST':
         form = PacienteForm(request.POST)
         if form.is_valid():
             paciente = form.save(commit=False)
+
             documento = form.cleaned_data['documento_id']
             email = form.cleaned_data['email']
             nombres = form.cleaned_data['nombres']
             apellidos = form.cleaned_data['apellidos']
+            clinica = form.cleaned_data['clinica_creacion']
 
+            nombre_completo = f"{nombres} {apellidos}"
             clave_generada = get_random_string(length=10)
 
             user = User.objects.create_user(
@@ -279,15 +287,18 @@ def registro_paciente(request):
                 first_name=nombres,
                 last_name=apellidos
             )
+
             grupo, _ = Group.objects.get_or_create(name='Pacientes')
             user.groups.add(grupo)
+
             paciente.user = user
+            paciente.clinica_creacion = clinica  # ✅ esta es la línea que faltaba
             paciente.save()
 
             send_mail(
                 subject='Tu cuenta ha sido creada en Clínica Dentotis',
                 message=(
-                    f"Hola {nombres},\n\n"
+                    f"Hola {nombre_completo},\n\n"
                     f"Tu cuenta ha sido creada exitosamente.\n\n"
                     f"Usuario: {documento}\n"
                     f"Contraseña temporal: {clave_generada}\n\n"
@@ -299,7 +310,7 @@ def registro_paciente(request):
                 fail_silently=False,
             )
 
-            messages.success(request, f"¡Cuenta creada! Revisa tu correo para la contraseña.")
+            messages.success(request, "¡Cuenta creada! Revisa tu correo para la contraseña.")
             return redirect('landing')
     else:
         form = PacienteForm()

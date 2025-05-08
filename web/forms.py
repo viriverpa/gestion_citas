@@ -52,10 +52,12 @@ class BusquedaPacienteForm(forms.Form):
     )
 
 
+from citas.models import Clinica  # asegúrate de tener esto al inicio del archivo
+
 class PacienteForm(forms.ModelForm):
     class Meta:
         model = Paciente
-        fields = ['nombres', 'apellidos', 'documento_id', 'email', 'pais', 'telefono']
+        fields = ['nombres', 'apellidos', 'documento_id', 'email', 'pais', 'telefono', 'clinica_creacion']
         widgets = {
             'nombres': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombres'}),
             'apellidos': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellidos'}),
@@ -63,6 +65,7 @@ class PacienteForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
             'pais': forms.Select(attrs={'class': 'form-select'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono (sin código de país)'}),
+            'clinica_creacion': forms.Select(attrs={'class': 'form-select'}),
         }
 
     def clean_documento_id(self):
