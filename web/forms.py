@@ -6,7 +6,7 @@ from django_countries.widgets import CountrySelectWidget
 from citas.models import Paciente
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import Paciente
+from citas.models import Paciente
 from citas.models import HistoriaClinica
 
 class LoginForm(forms.Form):
