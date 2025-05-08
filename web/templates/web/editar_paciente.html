@@ -4,19 +4,19 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>✏️ Editar Paciente</h2>
+    <h2>✏️ Editar Información Personal</h2>
 
     <form method="post" class="mt-4">
         {% csrf_token %}
 
         <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            {{ form.nombre|add_class:"form-control" }}
+            <label for="nombres" class="form-label">Nombres</label>
+            {{ form.nombres|add_class:"form-control" }}
         </div>
 
         <div class="mb-3">
-            <label for="documento_id" class="form-label">Documento</label>
-            {{ form.documento_id|add_class:"form-control" }}
+            <label for="apellidos" class="form-label">Apellidos</label>
+            {{ form.apellidos|add_class:"form-control" }}
         </div>
 
         <div class="mb-3">
@@ -39,8 +39,10 @@
         </div>
     </form>
 
+    {% if not request.user.groups.filter(name='Pacientes').exists %}
     <div class="text-center mt-4">
         <a href="{% url 'panel_pacientes' %}" class="btn btn-volver">🔙 Volver a Pacientes</a>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

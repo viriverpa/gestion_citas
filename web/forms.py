@@ -6,6 +6,8 @@ from django_countries.widgets import CountrySelectWidget
 from citas.models import Paciente
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from .models import Paciente
+from citas.models import HistoriaClinica
 
 class LoginForm(forms.Form):
     documento = forms.CharField(
@@ -19,18 +21,15 @@ class LoginForm(forms.Form):
 class PacienteEditForm(forms.ModelForm):
     class Meta:
         model = Paciente
-        fields = ['nombres', 'apellidos', 'documento_id', 'email', 'pais', 'telefono']
+        exclude = ['user', 'documento_id', 'clinica_creacion']
         widgets = {
             'nombres': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombres'}),
             'apellidos': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellidos'}),
-            'documento_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número de documento'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
             'pais': forms.Select(attrs={'class': 'form-select'}),
-            'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono (sin código de país)'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono'}),
         }
 
-from django import forms
-from citas.models import HistoriaClinica
 
 class HistoriaClinicaForm(forms.ModelForm):
     class Meta:

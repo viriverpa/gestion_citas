@@ -165,18 +165,22 @@ def crear_paciente(request):
 
 
 @login_required
-def editar_paciente(request, paciente_id):
-    paciente = get_object_or_404(Paciente, id=paciente_id)
+def editar_paciente(request, pk=None):
+    if request.user.groups.filter(name='Pacientes').exists():
+        paciente = get_object_or_404(Paciente, user=request.user)
+    else:
+        paciente = get_object_or_404(Paciente, pk=pk)
 
     if request.method == 'POST':
         form = PacienteEditForm(request.POST, instance=paciente)
         if form.is_valid():
             form.save()
-            return redirect('panel_pacientes')
+            messages.success(request, "Información actualizada correctamente.")
+            return redirect('panel_paciente') if request.user.groups.filter(name='Pacientes').exists() else redirect('panel_pacientes')
     else:
         form = PacienteEditForm(instance=paciente)
 
-    return render(request, 'web/editar_paciente.html', {'form': form, 'paciente': paciente})
+    return render(request, 'web/editar_paciente.html', {'form': form})
 
 
 @login_required
