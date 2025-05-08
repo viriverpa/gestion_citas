@@ -51,6 +51,7 @@ class BusquedaPacienteForm(forms.Form):
         })
     )
 
+
 class PacienteForm(forms.ModelForm):
     class Meta:
         model = Paciente
@@ -63,6 +64,12 @@ class PacienteForm(forms.ModelForm):
             'pais': forms.Select(attrs={'class': 'form-select'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono (sin código de país)'}),
         }
+
+    def clean_documento_id(self):
+        documento = self.cleaned_data.get('documento_id')
+        if Paciente.objects.filter(documento_id=documento).exists():
+            raise ValidationError("Ya existe un paciente con esa cédula.")
+        return documento
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
