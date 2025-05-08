@@ -21,7 +21,7 @@
             {% for paciente in pacientes %}
             <div class="col">
                 <div class="card p-3">
-                    <h5>{{ paciente.nombre }}</h5>
+                    <h5>{{ paciente.nombres }} {{ paciente.apellidos }}</h5>
                     <p><strong>Documento:</strong> {{ paciente.documento_id }}</p>
                     <p><strong>Email:</strong> {{ paciente.email|default:"No registrado" }}</p>
 

@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">🧑‍⚕️ Historia Clínica del Paciente: <strong>{{ paciente.nombre }}</strong></h2>
+    <h2 class="mb-4">🧑‍⚕️ Historia Clínica del Paciente: <strong>{{ paciente.nombres }} {{ paciente.apellidos }}</strong></h2>
 
     {% if mensaje_exito %}
     <div class="alert alert-success">
