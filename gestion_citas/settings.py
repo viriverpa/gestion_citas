@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'citas',
     'django_countries',
     'web',
+    'widget_tweaks',
 ]
 
 # ------------------------------

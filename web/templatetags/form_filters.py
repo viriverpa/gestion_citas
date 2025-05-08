@@ -1,3 +1,5 @@
+{% load widget_tweaks %}
+
 from django import template
 from django.utils.safestring import SafeString
 
