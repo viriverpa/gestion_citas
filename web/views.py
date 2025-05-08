@@ -12,7 +12,7 @@ from django.core.mail import send_mail
 from django.utils.timezone import now
 from django.utils.crypto import get_random_string
 from django.shortcuts import render, redirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 
 def landing(request):
@@ -251,6 +251,7 @@ def buscar_paciente(request):
         'pacientes': pacientes
     })
 
+
 @login_required
 def crear_cita_paciente(request):
     paciente = get_object_or_404(Paciente, user=request.user)
@@ -259,11 +260,36 @@ def crear_cita_paciente(request):
     odontologos = Odontologo.objects.filter(clinica_asignada=clinica)
     tratamientos = Tratamiento.objects.all()
 
+    if request.method == 'POST':
+        odontologo_id = request.POST.get('odontologo')
+        tratamiento_id = request.POST.get('tratamiento')
+
+        if not odontologo_id or not tratamiento_id:
+            messages.error(request, "Debes seleccionar un odontólogo y un tratamiento.")
+            return redirect('crear_cita_paciente')
+
+        odontologo = get_object_or_404(Odontologo, id=odontologo_id, clinica_asignada=clinica)
+        tratamiento = get_object_or_404(Tratamiento, id=tratamiento_id)
+
+        # Crear la cita (sin fecha/hora todavía)
+        cita = Cita.objects.create(
+            paciente=paciente,
+            odontologo=odontologo,
+            tratamiento=tratamiento,
+            clinica=clinica,
+            motivo_consulta="Pendiente definir fecha y hora",
+            estado='P'
+        )
+
+        messages.success(request, "La cita ha sido registrada. Falta definir fecha y hora.")
+        return redirect('panel_paciente')
+
     return render(request, 'web/crear_cita_paciente.html', {
         'paciente': paciente,
         'odontologos': odontologos,
         'tratamientos': tratamientos,
     })
+
 
 def registro_paciente(request):
     if request.method == 'POST':
