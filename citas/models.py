@@ -47,8 +47,25 @@ class Odontologo(models.Model):
         return f"{self.nombre} ({self.especialidad})"
 
 class Tratamiento(models.Model):
+    ESPECIALIDADES = [
+        ('Higienista', 'Higienista'),
+        ('Odontología general', 'Odontología general'),
+        ('Cirugía oral y maxilofacial', 'Cirugía oral y maxilofacial'),
+        ('Endodoncia', 'Endodoncia'),
+        ('Odontología estética', 'Odontología estética'),
+        ('Odontopediatría', 'Odontopediatría'),
+        ('Ortodoncia', 'Ortodoncia'),
+        ('Patología bucal', 'Patología bucal'),
+        ('Periodoncia', 'Periodoncia'),
+    ]
+
     nombre = models.CharField(max_length=100)
     duracion = models.IntegerField(help_text="Duración en minutos")
+    especialidad_requerida = models.CharField(
+        max_length=50,
+        choices=ESPECIALIDADES,
+        help_text="Especialidad del profesional que realiza el tratamiento"
+    )
 
     def __str__(self):
         return f"{self.nombre} ({self.duracion} min)"
