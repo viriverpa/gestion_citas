@@ -13,6 +13,8 @@ from django.utils.timezone import now
 from django.utils.crypto import get_random_string
 from django.shortcuts import render, redirect
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
+
 
 
 def landing(request):
