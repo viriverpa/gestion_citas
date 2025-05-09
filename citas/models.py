@@ -67,7 +67,7 @@ class Cita(models.Model):
     estado = models.CharField(max_length=1, choices=ESTADOS_CITA, default='P')
 
     def __str__(self):
-        return f"{self.paciente.nombre} - {self.tratamiento.nombre} ({self.fecha_hora})"
+        return f"{self.paciente.nombres} {self.paciente.apellidos} - {self.tratamiento.nombre} ({self.fecha_hora})"
 
 class HorarioAtencion(models.Model):
     dia_semana = models.IntegerField(help_text="1=Lunes ... 7=Domingo")
