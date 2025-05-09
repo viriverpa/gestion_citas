@@ -271,14 +271,15 @@ def crear_cita_paciente(request):
         odontologo = get_object_or_404(Odontologo, id=odontologo_id, clinica_asignada=clinica)
         tratamiento = get_object_or_404(Tratamiento, id=tratamiento_id)
 
-        # Crear la cita (sin fecha/hora todavía)
+        # Crear la cita (con  fecha/hora de hoy-provisional)
         cita = Cita.objects.create(
             paciente=paciente,
             odontologo=odontologo,
             tratamiento=tratamiento,
             clinica=clinica,
             motivo_consulta="Pendiente definir fecha y hora",
-            estado='P'
+            estado='P',
+            fecha_hora=timezone.now()  # Fecha provisional
         )
 
         messages.success(request, "La cita ha sido registrada. Falta definir fecha y hora.")
