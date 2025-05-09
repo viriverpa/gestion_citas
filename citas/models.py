@@ -64,7 +64,7 @@ class Tratamiento(models.Model):
     especialidad_requerida = models.CharField(
         max_length=50,
         choices=ESPECIALIDADES,
-        default='Odontología general',  # o cualquier otra que tenga sentido por defecto
+#        default='Odontología general',  # o cualquier otra que tenga sentido por defecto
         help_text="Especialidad del profesional que realiza el tratamiento"
     )
 
