@@ -38,6 +38,11 @@ class HorarioAtencionAdmin(admin.ModelAdmin):
     list_display = ('odontologo', 'clinica', 'dia_semana', 'hora_inicio', 'hora_fin')
     list_filter = ('clinica', 'odontologo')
 
-admin.site.register(Tratamiento)
+@admin.register(Tratamiento)
+class TratamientoAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'duracion', 'especialidad_requerida')
+    list_filter = ('especialidad_requerida',)
+    search_fields = ('nombre',)
+
 admin.site.register(HistoriaClinica)
 admin.site.register(FotoTratamiento)
