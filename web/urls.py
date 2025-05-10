@@ -69,4 +69,17 @@ urlpatterns = [
     path('recuperar-contrasena/completado/', auth_views.PasswordResetCompleteView.as_view(
         template_name='web/password_reset_complete.html',
     ), name='password_reset_complete'),
-]
+    
+    # -------------------
+    #  Crear la URL y vista para mostrar la malla
+    # -------------------
+    
+    path('panel/paciente/malla-disponible/', views.malla_disponibilidad_paciente, name='malla_disponibilidad_paciente'),
+    
+    # -------------------
+    # Crear cita desde por Especialiista o Administrador
+    # -------------------
+    
+    path('pacientes/<int:paciente_id>/crear-cita/', views.crear_cita_admin, name='crear_cita_admin'),
+
+]  
