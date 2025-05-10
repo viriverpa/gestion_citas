@@ -442,3 +442,7 @@ def crear_cita_admin(request, paciente_id):
         'odontologos': odontologos,
         'tratamientos': tratamientos,
     })
+
+@login_required
+def panel_citas(request):
+    return render(request, 'web/panel_citas.html')

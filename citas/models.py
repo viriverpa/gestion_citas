@@ -47,31 +47,24 @@ class Especialidad(models.Model):
 class Odontologo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nombre = models.CharField(max_length=100)
-    especialidad = models.ForeignKey(Especialidad, on_delete=models.SET_NULL, null=True, blank=True)
+    especialidad = models.ForeignKey('Especialidad', on_delete=models.SET_NULL, null=True, blank=True)
     clinica_asignada = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True)
 
-    def __str__(self):
-        return f"{self.nombre} ({self.especialidad})"
 
 class Tratamiento(models.Model):
     nombre = models.CharField(max_length=100)
     duracion = models.IntegerField(help_text="Duración en minutos")
-    especialidad_requerida = models.ForeignKey(Especialidad, on_delete=models.SET_NULL, null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.nombre} ({self.duracion} min)"
-
-    nombre = models.CharField(max_length=100)
-    duracion = models.IntegerField(help_text="Duración en minutos")
-    especialidad_requerida = models.CharField(
-        max_length=50,
-        choices=ESPECIALIDADES,
-#        default='Odontología general',  # o cualquier otra que tenga sentido por defecto
+    especialidad_requerida = models.ForeignKey(
+        Especialidad,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name="Especialidad Requerida",
         help_text="Especialidad del profesional que realiza el tratamiento"
     )
 
     def __str__(self):
         return f"{self.nombre} ({self.duracion} min)"
+
 
 class Cita(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)

@@ -81,5 +81,7 @@ urlpatterns = [
     # -------------------
     
     path('pacientes/<int:paciente_id>/crear-cita/', views.crear_cita_admin, name='crear_cita_admin'),
+    
+    path('citas/', views.panel_citas, name='panel_citas'),
 
 ]  
