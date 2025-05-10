@@ -58,19 +58,19 @@
                     <div class="card-body">
                         <h5 class="card-title">Pacientes</h5>
                         <p class="card-text">Registrar y gestionar pacientes.</p>
-                        <a href="{% url 'panel_citas' %}" class="btn btn-primary">Entrar</a>
+                        <a href="{% url 'panel_pacientes' %}" class="btn btn-primary">Entrar</a>
                     </div>
                 </div>
             </div>
         {% endif %}
-
+            
         {% if 'Administrador' in grupos %}
             <div class="col">
                 <div class="card card-option text-center p-4">
                     <div class="card-body">
                         <h5 class="card-title">Citas</h5>
                         <p class="card-text">Programar y administrar citas.</p>
-                        <a href="{% url 'panel_pacientes' %}" class="btn btn-primary">Entrar</a>
+                        <a href="{% url 'panel_citas' %}" class="btn btn-primary">Entrar</a>
                     </div>
                 </div>
             </div>
