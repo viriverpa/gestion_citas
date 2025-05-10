@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">🗓️ Selecciona una franja disponible para tu tratamiento</h2>
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        {% for dia in malla %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab-{{ forloop.counter }}" data-bs-toggle="tab" data-bs-target="#dia-{{ forloop.counter }}" type="button" role="tab">
+                    {{ dia.fecha|date:"l d/m" }}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content mt-3">
+        {% for dia in malla %}
+        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="dia-{{ forloop.counter }}" role="tabpanel">
+            {% if dia.disponibles %}
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Hora</th>
+                            <th>Cabina</th>
+                            <th>Especialista</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for espacio in dia.disponibles %}
+                        <tr>
+                            <td>{{ espacio.hora }}</td>
+                            <td>{{ espacio.cabina }}</td>
+                            <td>{{ espacio.especialista }}</td>
+                            <td>
+                                <a href="#" class="btn btn-success btn-sm">Reservar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="alert alert-warning">No hay espacios disponibles para este día.</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
