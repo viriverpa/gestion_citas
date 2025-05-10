@@ -14,6 +14,7 @@ from django.utils.crypto import get_random_string
 from django.shortcuts import render, redirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import make_aware
+from django.utils import timezone
 
 
 
@@ -254,26 +255,31 @@ def buscar_paciente(request):
     })
 
 
+from django.utils import timezone  # Asegúrate de tener esta línea arriba
+
 @login_required
 def crear_cita_paciente(request):
     paciente = get_object_or_404(Paciente, user=request.user)
     clinica = paciente.clinica_creacion
 
-    odontologos = Odontologo.objects.filter(clinica_asignada=clinica)
     tratamientos = Tratamiento.objects.all()
+    odontologos = Odontologo.objects.filter(clinica_asignada=clinica)
 
     if request.method == 'POST':
-        odontologo_id = request.POST.get('odontologo')
         tratamiento_id = request.POST.get('tratamiento')
+        odontologo_id = request.POST.get('odontologo')
 
-        if not odontologo_id or not tratamiento_id:
-            messages.error(request, "Debes seleccionar un odontólogo y un tratamiento.")
+        if not tratamiento_id or not odontologo_id:
+            messages.error(request, "Debes seleccionar un tratamiento y un odontólogo.")
             return redirect('crear_cita_paciente')
 
-        odontologo = get_object_or_404(Odontologo, id=odontologo_id, clinica_asignada=clinica)
         tratamiento = get_object_or_404(Tratamiento, id=tratamiento_id)
+        odontologo = get_object_or_404(Odontologo, id=odontologo_id, clinica_asignada=clinica)
 
-        # Crear la cita (con  fecha/hora de hoy-provisional)
+        if odontologo.especialidad != tratamiento.especialidad_requerida:
+            messages.error(request, "El odontólogo seleccionado no tiene la especialidad requerida para este tratamiento.")
+            return redirect('crear_cita_paciente')
+
         cita = Cita.objects.create(
             paciente=paciente,
             odontologo=odontologo,
@@ -281,7 +287,7 @@ def crear_cita_paciente(request):
             clinica=clinica,
             motivo_consulta="Pendiente definir fecha y hora",
             estado='P',
-            fecha_hora=timezone.now()  # Fecha provisional
+            fecha_hora=timezone.now()  # Provisional
         )
 
         messages.success(request, "La cita ha sido registrada. Falta definir fecha y hora.")

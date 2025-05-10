@@ -8,7 +8,9 @@ from .models import (
     HorarioAtencion,
     HistoriaClinica,
     FotoTratamiento,
+    Especialidad,
 )
+
 
 @admin.register(Clinica)
 class ClinicaAdmin(admin.ModelAdmin):
@@ -46,3 +48,7 @@ class TratamientoAdmin(admin.ModelAdmin):
 
 admin.site.register(HistoriaClinica)
 admin.site.register(FotoTratamiento)
+
+@admin.register(Especialidad)
+class EspecialidadAdmin(admin.ModelAdmin):
+    list_display = ('nombre',)

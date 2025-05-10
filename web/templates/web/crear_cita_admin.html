@@ -8,21 +8,21 @@
     {% csrf_token %}
 
     <div class="mb-3">
-      <label for="odontologo" class="form-label">Odontólogo</label>
-      <select name="odontologo" id="odontologo" class="form-select" required>
-        <option value="">-- Selecciona un odontólogo --</option>
-        {% for o in odontologos %}
-          <option value="{{ o.id }}">{{ o.nombre }} ({{ o.especialidad }})</option>
+      <label for="tratamiento" class="form-label">Tratamiento</label>
+      <select name="tratamiento" id="tratamiento" class="form-select" required>
+        <option value="">-- Selecciona un tratamiento --</option>
+        {% for t in tratamientos %}
+          <option value="{{ t.id }}" data-especialidad="{{ t.especialidad_requerida }}">{{ t.nombre }} ({{ t.duracion }} min)</option>
         {% endfor %}
       </select>
     </div>
 
     <div class="mb-3">
-      <label for="tratamiento" class="form-label">Tratamiento</label>
-      <select name="tratamiento" id="tratamiento" class="form-select" required>
-        <option value="">-- Selecciona un tratamiento --</option>
-        {% for t in tratamientos %}
-          <option value="{{ t.id }}">{{ t.nombre }} ({{ t.duracion }} min)</option>
+      <label for="odontologo" class="form-label">Odontólogo</label>
+      <select name="odontologo" id="odontologo" class="form-select" required disabled>
+        <option value="">-- Selecciona un odontólogo --</option>
+        {% for o in odontologos %}
+          <option value="{{ o.id }}" data-especialidad="{{ o.especialidad }}">{{ o.nombre }} ({{ o.especialidad }})</option>
         {% endfor %}
       </select>
     </div>
@@ -33,4 +33,28 @@
     </div>
   </form>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const tratamientoSelect = document.getElementById("tratamiento");
+  const odontologoSelect = document.getElementById("odontologo");
+  const allOptions = Array.from(odontologoSelect.querySelectorAll("option"));
+
+  tratamientoSelect.addEventListener("change", function () {
+    const selectedEspecialidad = this.selectedOptions[0].getAttribute("data-especialidad");
+
+    odontologoSelect.innerHTML = "";
+    odontologoSelect.appendChild(new Option("-- Selecciona un odontólogo --", ""));
+
+    allOptions.forEach(opt => {
+      if (!opt.value) return;  // Ignorar opción vacía
+      if (opt.getAttribute("data-especialidad") === selectedEspecialidad) {
+        odontologoSelect.appendChild(opt);
+      }
+    });
+
+    odontologoSelect.disabled = false;
+  });
+});
+</script>
 {% endblock %}

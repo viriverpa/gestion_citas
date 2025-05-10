@@ -37,27 +37,29 @@ class Paciente(models.Model):
     def __str__(self):
         return f"{self.nombres} {self.apellidos} ({self.documento_id})"
 
+class Especialidad(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.nombre
+
+
 class Odontologo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nombre = models.CharField(max_length=100)
-    especialidad = models.CharField(max_length=100)
+    especialidad = models.ForeignKey(Especialidad, on_delete=models.SET_NULL, null=True, blank=True)
     clinica_asignada = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"{self.nombre} ({self.especialidad})"
 
 class Tratamiento(models.Model):
-    ESPECIALIDADES = [
-        ('Higienista', 'Higienista'),
-        ('Odontología general', 'Odontología general'),
-        ('Cirugía oral y maxilofacial', 'Cirugía oral y maxilofacial'),
-        ('Endodoncia', 'Endodoncia'),
-        ('Odontología estética', 'Odontología estética'),
-        ('Odontopediatría', 'Odontopediatría'),
-        ('Ortodoncia', 'Ortodoncia'),
-        ('Patología bucal', 'Patología bucal'),
-        ('Periodoncia', 'Periodoncia'),
-    ]
+    nombre = models.CharField(max_length=100)
+    duracion = models.IntegerField(help_text="Duración en minutos")
+    especialidad_requerida = models.ForeignKey(Especialidad, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.nombre} ({self.duracion} min)"
 
     nombre = models.CharField(max_length=100)
     duracion = models.IntegerField(help_text="Duración en minutos")
@@ -115,3 +117,4 @@ class FotoTratamiento(models.Model):
 
     def __str__(self):
         return f"Foto de {self.historia_clinica.paciente.nombre} - {self.fecha.strftime('%Y-%m-%d')}"
+    
