@@ -22,6 +22,9 @@
 
 
   <h1>Bienvenido, {{ paciente.nombres }} {{ paciente.apellidos }}</h1>
+  {% if acceso_admin %}
+    <a href="{% url 'panel_pacientes' %}" class="btn btn-outline-secondary mb-3">⬅️ Volver al listado de pacientes</a>
+  {% endif %}
 
   <div class="card mb-4">
     <div class="card-header">

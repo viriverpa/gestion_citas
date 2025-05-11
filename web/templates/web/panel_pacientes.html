@@ -28,7 +28,7 @@
                 
                     <div class="d-flex flex-wrap gap-2 mt-3">
                         <a href="{% url 'editar_paciente_admin' paciente.id %}" class="btn btn-outline-primary btn-sm">✏️ Editar</a>
-                        <a href="{% url 'crear_cita_admin' paciente.id %}" class="btn btn-outline-success btn-sm">📅 Crear/Ver Citas</a>
+                        <a href="{% url 'ver_panel_paciente_admin' paciente.id %}" class="btn btn-primary">Crear / Ver Cita</a>
                         <a href="{% url 'gestionar_historia' paciente.id %}" class="btn btn-outline-info btn-sm">📘 Historia</a>
                     </div>
                 </div>                

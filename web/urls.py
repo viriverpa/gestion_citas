@@ -41,6 +41,11 @@ urlpatterns = [
     # Citas
     # -------------------
     path('cita/<int:cita_id>/atendida/', views.marcar_cita_atendida, name='marcar_cita_atendida'),
+    path('panel/paciente/guardar-cita/', views.guardar_cita_paciente, name='guardar_cita_paciente'),
+    path('pacientes/<int:paciente_id>/crear-cita/', views.crear_cita_admin, name='crear_cita_admin'),
+    path('pacientes/<int:paciente_id>/cita/', views.ver_panel_paciente_admin, name='ver_panel_paciente_admin'),
+    path('citas/', views.panel_citas, name='panel_citas'),
+    path('panel/paciente/reprogramar/<int:cita_id>/', views.reprogramar_cita_paciente, name='reprogramar_cita_paciente'),
 
     # -------------------
     # Búsqueda
@@ -76,26 +81,5 @@ urlpatterns = [
     
     path('panel/paciente/malla-disponible/', views.malla_disponibilidad_paciente, name='malla_disponibilidad_paciente'),
     
-    # -------------------
-    # Crear cita desde por Especialiista o Administrador
-    # -------------------
-    
-    path('pacientes/<int:paciente_id>/crear-cita/', views.crear_cita_admin, name='crear_cita_admin'),
-    
-    path('citas/', views.panel_citas, name='panel_citas'),
-
-    
-# -------------------
-# Agendar citas
-# -------------------
-
-    path('panel/paciente/guardar-cita/', views.guardar_cita_paciente, name='guardar_cita_paciente'),
-    
-# -------------------
-# Reprogramar citas
-# -------------------
-
-path('panel/paciente/reprogramar/<int:cita_id>/', views.reprogramar_cita_paciente, name='reprogramar_cita_paciente'),
-
 
 ]  

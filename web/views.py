@@ -109,7 +109,12 @@ def panel_pacientes(request):
 @login_required
 def logout_view(request):
     logout(request)
-    return redirect('landing')
+    return redirect('landing')@login_required
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        return redirect('landing')
+    return HttpResponse(status=405)  # Method not allowed
 
 
 @login_required
@@ -554,3 +559,25 @@ def crear_cita_paciente(request):
         'tratamientos': tratamientos,
     })
 
+# -------------------
+# Ver cita pendiente de Paciente
+# -------------------
+
+@login_required
+def ver_panel_paciente_admin(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    # Verifica si el usuario pertenece a staff (admin o especialista)
+    if not request.user.is_staff and not request.user.groups.filter(name__in=['Administradores', 'Especialistas']).exists():
+        return redirect('landing')
+
+    # Obtener última cita del paciente
+    ultima_cita = Cita.objects.filter(paciente=paciente).order_by('-fecha_hora').first()
+
+    return render(request, 'web/panel_paciente.html', {
+        'paciente': paciente,
+        'ultima_cita': ultima_cita,
+        'cita_reprogramada': False,  # No hay reprogramación desde admin
+        'citas': [ultima_cita] if ultima_cita else [],
+        'acceso_admin': True,  # opcional si quieres ajustar la plantilla
+    })
