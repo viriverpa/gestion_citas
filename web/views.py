@@ -74,7 +74,7 @@ def panel_admin(request):
 @login_required
 def panel_especialista(request):
     citas = Cita.objects.filter(
-        odontologo__nombre=request.user.username,
+        odontologo__user=request.user,
         fecha_hora__gte=now(),
         estado='P'
     ).order_by('fecha_hora')
