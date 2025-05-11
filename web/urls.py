@@ -84,4 +84,18 @@ urlpatterns = [
     
     path('citas/', views.panel_citas, name='panel_citas'),
 
+    
+# -------------------
+# Agendar citas
+# -------------------
+
+    path('panel/paciente/guardar-cita/', views.guardar_cita_paciente, name='guardar_cita_paciente'),
+    
+# -------------------
+# Reprogramar citas
+# -------------------
+
+path('panel/paciente/reprogramar/<int:cita_id>/', views.reprogramar_cita_paciente, name='reprogramar_cita_paciente'),
+
+
 ]  

@@ -4,18 +4,32 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.http import HttpResponse
-from .forms import LoginForm, HistoriaClinicaForm, BusquedaPacienteForm, PacienteForm, PacienteEditForm
-from citas.models import Cita, HistoriaClinica, Paciente, Odontologo, Tratamiento
-from datetime import datetime, timedelta, time
-from django.db.models import Q
 from django.core.mail import send_mail
-from django.utils.timezone import now
 from django.utils.crypto import get_random_string
-from django.shortcuts import render, redirect
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.timezone import make_aware
 from django.utils import timezone
+from django.utils.timezone import now, make_aware
+from django.db.models import Q
 
+
+from .forms import (
+    LoginForm,
+    HistoriaClinicaForm,
+    BusquedaPacienteForm,
+    PacienteForm,
+    PacienteEditForm,
+)
+
+from citas.models import (
+    Cita,
+    HistoriaClinica,
+    Paciente,
+    Odontologo,
+    Tratamiento,
+)
+
+#from .models import HorarioAtencion  # Solo si usas este modelo
+
+from datetime import datetime, timedelta, time
 
 
 def landing(request):
@@ -64,25 +78,6 @@ def panel_especialista(request):
     ).order_by('fecha_hora')
 
     return render(request, 'web/panel_especialista.html', {'citas': citas})
-
-
-@login_required
-def panel_paciente(request):
-    try:
-        paciente = Paciente.objects.get(user=request.user)
-    except Paciente.DoesNotExist:
-        messages.error(request, "No se encontró información del paciente.")
-        return redirect('landing')
-
-    citas_proximas = Cita.objects.filter(
-        paciente=paciente,
-        fecha_hora__gte=now()
-    ).order_by('fecha_hora')
-
-    return render(request, 'web/panel_paciente.html', {
-        'paciente': paciente,
-        'citas': citas_proximas
-    })
 
 
 @login_required
@@ -255,51 +250,6 @@ def buscar_paciente(request):
     })
 
 
-from django.utils import timezone  # Asegúrate de tener esta línea arriba
-
-@login_required
-def crear_cita_paciente(request):
-    paciente = get_object_or_404(Paciente, user=request.user)
-    clinica = paciente.clinica_creacion
-
-    tratamientos = Tratamiento.objects.all()
-    odontologos = Odontologo.objects.filter(clinica_asignada=clinica)
-
-    if request.method == 'POST':
-        tratamiento_id = request.POST.get('tratamiento')
-        odontologo_id = request.POST.get('odontologo')
-
-        if not tratamiento_id or not odontologo_id:
-            messages.error(request, "Debes seleccionar un tratamiento y un odontólogo.")
-            return redirect('crear_cita_paciente')
-
-        tratamiento = get_object_or_404(Tratamiento, id=tratamiento_id)
-        odontologo = get_object_or_404(Odontologo, id=odontologo_id, clinica_asignada=clinica)
-
-        if odontologo.especialidad != tratamiento.especialidad_requerida:
-            messages.error(request, "El odontólogo seleccionado no tiene la especialidad requerida para este tratamiento.")
-            return redirect('crear_cita_paciente')
-
-        cita = Cita.objects.create(
-            paciente=paciente,
-            odontologo=odontologo,
-            tratamiento=tratamiento,
-            clinica=clinica,
-            motivo_consulta="Pendiente definir fecha y hora",
-            estado='P',
-            fecha_hora=timezone.now()  # Provisional
-        )
-
-        messages.success(request, "La cita ha sido registrada. Falta definir fecha y hora.")
-        return redirect('panel_paciente')
-
-    return render(request, 'web/crear_cita_paciente.html', {
-        'paciente': paciente,
-        'odontologos': odontologos,
-        'tratamientos': tratamientos,
-    })
-
-
 def registro_paciente(request):
     if request.method == 'POST':
         form = PacienteForm(request.POST)
@@ -353,57 +303,6 @@ def registro_paciente(request):
     return render(request, 'web/registro_paciente.html', {'form': form})
 
 
-@login_required
-def malla_disponibilidad_paciente(request):
-    paciente = get_object_or_404(Paciente, user=request.user)
-    tratamiento_id = request.GET.get('tratamiento')
-
-    if not tratamiento_id:
-        messages.error(request, "Debes seleccionar un tratamiento válido.")
-        return redirect('crear_cita_paciente')
-
-    tratamiento = get_object_or_404(Tratamiento, id=tratamiento_id)
-    clinica = paciente.clinica_creacion
-    especialidad_requerida = tratamiento.especialidad_requerida
-
-    odontologos = Odontologo.objects.filter(clinica_asignada=clinica, especialidad=especialidad_requerida)
-
-    hoy = datetime.now().date()
-    dias = [hoy + timedelta(days=d) for d in range(0, 7) if (hoy + timedelta(days=d)).weekday() in [2, 4]]  # Miércoles=2, Viernes=4
-
-    bloques_por_dia = []
-
-    for dia in dias:
-        bloques = []
-        hora_inicio = time(8, 0)
-        hora_fin = time(12, 0)
-
-        while datetime.combine(dia, hora_inicio) < datetime.combine(dia, hora_fin):
-            for cabina in range(1, 4):
-                bloques.append({
-                    'inicio': datetime.combine(dia, hora_inicio),
-                    'cabina': cabina
-                })
-            hora_inicio = (datetime.combine(dia, hora_inicio) + timedelta(minutes=tratamiento.duracion)).time()
-
-        hora_inicio = time(14, 0)
-        hora_fin = time(18, 0)
-
-        while datetime.combine(dia, hora_inicio) < datetime.combine(dia, hora_fin):
-            for cabina in range(1, 4):
-                bloques.append({
-                    'inicio': datetime.combine(dia, hora_inicio),
-                    'cabina': cabina
-                })
-            hora_inicio = (datetime.combine(dia, hora_inicio) + timedelta(minutes=tratamiento.duracion)).time()
-
-        bloques_por_dia.append({'fecha': dia, 'bloques': bloques})
-
-    return render(request, 'web/malla_disponibilidad_paciente.html', {
-        'paciente': paciente,
-        'tratamiento': tratamiento,
-        'bloques_por_dia': bloques_por_dia,
-    })
 
 @login_required
 def crear_cita_admin(request, paciente_id):
@@ -446,3 +345,212 @@ def crear_cita_admin(request, paciente_id):
 @login_required
 def panel_citas(request):
     return render(request, 'web/panel_citas.html')
+
+# -------------------
+# Crear la URL y vista para mostrar la malla
+# -------------------
+
+@login_required
+def malla_disponibilidad_paciente(request):
+    paciente = get_object_or_404(Paciente, user=request.user)
+    tratamiento_id = request.GET.get('tratamiento')
+    odontologo_id = request.GET.get('odontologo')
+
+    tratamiento = Tratamiento.objects.filter(id=tratamiento_id).first()
+    odontologo = Odontologo.objects.filter(id=odontologo_id).first()
+    reprogramar_id = request.GET.get('reprogramar')  # viene si estamos reprogramando
+
+    if not tratamiento or not odontologo:
+        messages.error(request, "Debes seleccionar primero tratamiento y odontólogo.")
+        return redirect('crear_cita_paciente')
+
+    hoy = datetime.now().date()
+    pagina = int(request.GET.get('pagina', 0))
+
+    # Buscar los próximos miércoles y viernes
+    dias_disponibles = []
+    for i in range(60):
+        dia = hoy + timedelta(days=i)
+        if dia.weekday() in [2, 4]:  # Miércoles o Viernes
+            dias_disponibles.append(dia)
+
+    desde = pagina * 12
+    hasta = desde + 12
+    dias_mostrados = dias_disponibles[desde:hasta]
+
+    # Cargar todas las citas de esos días
+    citas = Cita.objects.filter(
+        fecha_hora__date__in=dias_mostrados,
+        estado='P'
+    ).values_list('fecha_hora', 'cabina')
+
+    citas_ocupadas = set((fecha.replace(second=0, microsecond=0), cabina) for fecha, cabina in citas)
+    malla = []
+    for dia in dias_mostrados:
+        bloques_disponibles = []
+
+        hora_inicio = timezone.make_aware(datetime.combine(dia, time(8, 0)))
+        hora_fin = timezone.make_aware(datetime.combine(dia, time(18, 0)))
+
+        while hora_inicio < hora_fin:
+            for cabina in range(1, 4):
+                if (hora_inicio, cabina) not in citas_ocupadas:
+                    bloques_disponibles.append({
+                        'hora': hora_inicio.strftime("%I:%M %p").lstrip("0").lower(),
+                        'cabina': cabina,
+                        'especialista': odontologo.nombre if odontologo else 'Por asignar',
+                    })
+            hora_inicio += timedelta(minutes=30)
+
+        malla.append({'fecha': dia, 'disponibles': bloques_disponibles})
+
+    return render(request, 'web/malla_disponibilidad_paciente.html', {
+        'malla': malla,
+        'pagina': pagina,
+        'hay_anteriores': pagina > 0,
+        'hay_mas': hasta < len(dias_disponibles),
+        'tratamiento_seleccionado': tratamiento.nombre,
+        'odontologo_seleccionado': odontologo.nombre,
+        'tratamiento_id': tratamiento.id,
+        'odontologo_id': odontologo.id,
+        'reprogramar_id': reprogramar_id,
+        'paciente': paciente,
+    })
+
+@login_required
+def guardar_cita_paciente(request):
+    if request.method == 'POST':
+        fecha = request.POST.get('fecha')
+        hora = request.POST.get('hora')
+        cabina = request.POST.get('cabina')
+        tratamiento_id = request.POST.get('tratamiento_id')
+        odontologo_id = request.POST.get('odontologo_id')
+        reprogramar_id = request.POST.get('reprogramar_id')
+
+        paciente = Paciente.objects.filter(user=request.user).first()
+        tratamiento = Tratamiento.objects.filter(id=tratamiento_id).first()
+        odontologo = Odontologo.objects.filter(id=odontologo_id).first()
+        clinica = paciente.clinica_creacion if paciente else None
+
+        if not all([fecha, hora, cabina, tratamiento, odontologo, paciente, clinica]):
+            messages.error(request, "Faltan datos para registrar la cita.")
+            return redirect('malla_disponibilidad_paciente')
+
+        try:
+            from datetime import datetime
+            fecha_hora = datetime.strptime(f"{fecha} {hora}", "%Y-%m-%d %I:%M %p")
+        except ValueError:
+            messages.error(request, "Formato de fecha u hora inválido.")
+            return redirect('malla_disponibilidad_paciente')
+
+        # Validar que la franja no esté ocupada
+        if Cita.objects.filter(fecha_hora=fecha_hora, cabina=int(cabina)).exclude(id=reprogramar_id).exists():
+            messages.warning(request, "Ese espacio ya fue reservado. Por favor elige otro.")
+            return redirect('malla_disponibilidad_paciente')
+
+        if reprogramar_id:
+            cita = get_object_or_404(Cita, id=reprogramar_id, paciente=paciente, estado='P')
+            cita.fecha_hora = fecha_hora
+            cita.cabina = int(cabina)
+            cita.save()
+            request.session['reprogramada'] = True
+            messages.success(request, "✅ Tu cita ha sido reprogramada con éxito.")
+
+        else:
+            Cita.objects.create(
+                paciente=paciente,
+                odontologo=odontologo,
+                tratamiento=tratamiento,
+                clinica=clinica,
+                fecha_hora=fecha_hora,
+                cabina=int(cabina),
+                motivo_consulta="Asignado por paciente",
+                estado='P'
+            )
+            request.session['cita_creada'] = True
+            messages.success(request, "✅ Cita agendada exitosamente.")
+
+        return redirect('panel_paciente')
+
+
+# -------------------
+# Mostrar resumen de la última cita
+# -------------------
+    
+@login_required
+def panel_paciente(request):
+    paciente = get_object_or_404(Paciente, user=request.user)
+
+    # Limpiar mensajes almacenados (solo si los usas vía messages.success)
+    storage = messages.get_messages(request)
+    storage.used = True
+
+    # Detectar y limpiar señales de éxito únicas
+    cita_reprogramada = request.session.pop('reprogramada', False)
+    request.session.pop('cita_creada', None)
+
+    # Obtener última cita y próximas citas
+    ultima_cita = Cita.objects.filter(paciente=paciente).order_by('-fecha_hora').first()
+    citas_proximas = Cita.objects.filter(
+        paciente=paciente,
+        fecha_hora__gte=now()
+    ).order_by('fecha_hora')
+
+    return render(request, 'web/panel_paciente.html', {
+        'paciente': paciente,
+        'ultima_cita': ultima_cita,
+        'cita_reprogramada': cita_reprogramada,
+        'citas': citas_proximas,
+    })
+
+    
+# -------------------
+# Reprogramar cita
+# -------------------
+
+@login_required
+def reprogramar_cita_paciente(request, cita_id):
+    # Validar que la cita pertenece al paciente autenticado y está pendiente
+    cita = get_object_or_404(Cita, id=cita_id, paciente__user=request.user, estado='P')
+
+    tratamiento_id = cita.tratamiento.id
+    odontologo_id = cita.odontologo.id
+
+    # Redirigir a la malla pasando además el ID de la cita a reprogramar
+    return redirect(f"/panel/paciente/malla-disponible/?tratamiento={tratamiento_id}&odontologo={odontologo_id}&reprogramar={cita.id}")
+
+# -------------------
+# Crear cita paciente
+# -------------------
+
+@login_required
+def crear_cita_paciente(request):
+    paciente = get_object_or_404(Paciente, user=request.user)
+    clinica = paciente.clinica_creacion
+
+    tratamientos = Tratamiento.objects.all()
+    odontologos = Odontologo.objects.filter(clinica_asignada=clinica)
+
+    if request.method == 'POST':
+        tratamiento_id = request.POST.get('tratamiento')
+        odontologo_id = request.POST.get('odontologo')
+
+        if not tratamiento_id or not odontologo_id:
+            messages.error(request, "Debes seleccionar un tratamiento y un odontólogo.")
+            return redirect('crear_cita_paciente')
+
+        tratamiento = get_object_or_404(Tratamiento, id=tratamiento_id)
+        odontologo = get_object_or_404(Odontologo, id=odontologo_id, clinica_asignada=clinica)
+
+        if odontologo.especialidad != tratamiento.especialidad_requerida:
+            messages.error(request, "El odontólogo seleccionado no tiene la especialidad requerida para este tratamiento.")
+            return redirect('crear_cita_paciente')
+
+        return redirect(f"/panel/paciente/malla-disponible/?tratamiento={tratamiento.id}&odontologo={odontologo.id}")
+
+    return render(request, 'web/crear_cita_paciente.html', {
+        'paciente': paciente,
+        'odontologos': odontologos,
+        'tratamientos': tratamientos,
+    })
+

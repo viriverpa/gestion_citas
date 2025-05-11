@@ -75,6 +75,10 @@ class Cita(models.Model):
     odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE)
     tratamiento = models.ForeignKey(Tratamiento, on_delete=models.SET_NULL, null=True)
     fecha_hora = models.DateTimeField()
+    cabina = models.IntegerField(
+    choices=[(1, 'Cabina 1'), (2, 'Cabina 2'), (3, 'Cabina 3')],
+    default=1
+    )
     motivo_consulta = models.TextField(blank=True)
     clinica = models.ForeignKey(Clinica, on_delete=models.CASCADE)
     ESTADOS_CITA = [
