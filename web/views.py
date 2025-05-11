@@ -5,10 +5,10 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.http import HttpResponse
 from django.core.mail import send_mail
-from django.utils.crypto import get_random_string
-from django.utils import timezone
-from django.utils.timezone import now, make_aware
 from django.db.models import Q
+from django.utils import timezone
+from django.utils.crypto import get_random_string
+
 
 
 from .forms import (
@@ -70,14 +70,14 @@ def panel_admin(request):
 
 @login_required
 def panel_especialista(request):
-    hoy = datetime.now().date()
     citas = Cita.objects.filter(
         odontologo__nombre=request.user.username,
-        fecha_hora__date__gte=hoy,
+        fecha_hora__gte=now(),
         estado='P'
     ).order_by('fecha_hora')
 
     return render(request, 'web/panel_especialista.html', {'citas': citas})
+
 
 
 @login_required
