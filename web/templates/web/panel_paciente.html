@@ -4,24 +4,24 @@
 <div class="container mt-4">
 
   {% if cita_reprogramada or request.session.cita_creada %}
-  <div class="alert alert-success shadow-sm mb-4">
-    <h5 class="fw-bold">
-      {% if cita_reprogramada %}
-        ✅ Cita reprogramada
-      {% else %}
-        ✅ Cita registrada
-      {% endif %}
-    </h5>
-    <p class="mb-1"><strong>Fecha:</strong> {{ ultima_cita.fecha_hora|date:"l d/m/Y" }}</p>
-    <p class="mb-1"><strong>Hora:</strong> {{ ultima_cita.fecha_hora|time:"g:i A" }}</p>
-    <p class="mb-1"><strong>Odontólogo:</strong> {{ ultima_cita.odontologo.nombre }}</p>
-    <p class="mb-1"><strong>Tratamiento:</strong> {{ ultima_cita.tratamiento.nombre }}</p>
-    <p class="mb-0"><strong>Cabina:</strong> {{ ultima_cita.cabina }}</p>
-  </div>
-{% endif %}
-
+    <div class="alert alert-success shadow-sm mb-4">
+      <h5 class="fw-bold">
+        {% if cita_reprogramada %}
+          ✅ Cita reprogramada
+        {% else %}
+          ✅ Cita registrada
+        {% endif %}
+      </h5>
+      <p class="mb-1"><strong>Fecha:</strong> {{ ultima_cita.fecha_hora|date:"l d/m/Y" }}</p>
+      <p class="mb-1"><strong>Hora:</strong> {{ ultima_cita.fecha_hora|time:"g:i A" }}</p>
+      <p class="mb-1"><strong>Odontólogo:</strong> {{ ultima_cita.odontologo.nombre }}</p>
+      <p class="mb-1"><strong>Tratamiento:</strong> {{ ultima_cita.tratamiento.nombre }}</p>
+      <p class="mb-0"><strong>Cabina:</strong> {{ ultima_cita.cabina }}</p>
+    </div>
+  {% endif %}
 
   <h1>Bienvenido, {{ paciente.nombres }} {{ paciente.apellidos }}</h1>
+
   {% if acceso_admin %}
     <a href="{% url 'panel_pacientes' %}" class="btn btn-outline-secondary mb-3">⬅️ Volver al listado de pacientes</a>
   {% endif %}
@@ -36,39 +36,35 @@
       <p><strong>Teléfono:</strong> {{ paciente.telefono }}</p>
       <p><strong>País:</strong> {{ paciente.pais.name }}</p>
 
-      <a href="{% url 'editar_paciente' %}" class="btn btn-outline-primary mt-3">✏️ Editar mi información</a>
-    </div>
-  </div>
-
-  <div class="card mb-4">
-    <div class="card-header">
-      Próximas Citas
-    </div>
-    <div class="card-body">
-      {% if citas %}
-        <ul class="list-group">
-          {% for cita in citas %}
-            <li class="list-group-item">
-              {{ cita.fecha_hora|date:"d M Y H:i" }} - {{ cita.tratamiento.nombre }}
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p>No tienes citas programadas.</p>
+      {% if request.user.groups.all.0.name == 'Pacientes' %}
+        <a href="{% url 'editar_paciente' %}" class="btn btn-outline-primary mt-3">✏️ Editar mi información</a>
+      {% elif es_administrador %}
+        <a href="{% url 'editar_paciente_admin' paciente.id %}" class="btn btn-outline-primary mt-3">✏️ Editar paciente</a>
       {% endif %}
     </div>
   </div>
 
-{% if not ultima_cita %}
-  <a href="{% url 'crear_cita_paciente' %}" class="btn btn-primary">📅 Agendar nueva cita</a>
-{% else %}
-  <div class="d-flex gap-2">
-    <button class="btn btn-secondary" disabled>Ya tienes una cita pendiente</button>
-    <a href="{% url 'reprogramar_cita_paciente' cita_id=ultima_cita.id %}" class="btn btn-outline-primary">✏️ Reprogramar</a>
-  </div>
-{% endif %}
+  {% if not ultima_cita %}
+    <a href="{% url 'crear_cita_paciente' %}" class="btn btn-primary">📅 Agendar nueva cita</a>
+  {% else %}
+    <div class="card mb-4">
+      <div class="card-header">
+        Cita pendiente
+      </div>
+      <div class="card-body">
+        <p><strong>Fecha:</strong> {{ ultima_cita.fecha_hora|date:"l d/m/Y" }}</p>
+        <p><strong>Hora:</strong> {{ ultima_cita.fecha_hora|time:"g:i A" }}</p>
+        <p><strong>Odontólogo:</strong> {{ ultima_cita.odontologo.nombre }}</p>
+        <p><strong>Tratamiento:</strong> {{ ultima_cita.tratamiento.nombre }}</p>
+        <p><strong>Cabina:</strong> {{ ultima_cita.cabina }}</p>
 
-
+        <div class="d-flex gap-2 mt-3">
+          <button class="btn btn-secondary" disabled>Ya tienes una cita pendiente</button>
+          <a href="{% url 'reprogramar_cita_paciente' cita_id=ultima_cita.id %}" class="btn btn-outline-warning">🔁 Reprogramar</a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
 
 </div>
 {% endblock %}

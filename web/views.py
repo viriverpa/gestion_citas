@@ -9,10 +9,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.crypto import get_random_string
-
-
-
-
+from .forms import BusquedaPacienteForm
 
 from .forms import (
     LoginForm,
@@ -73,13 +70,15 @@ def panel_admin(request):
 
 @login_required
 def panel_especialista(request):
-    citas = Cita.objects.filter(
-        odontologo__user=request.user,
-        fecha_hora__gte=now(),
-        estado='P'
-    ).order_by('fecha_hora')
+    pacientes = Paciente.objects.all().order_by('apellidos', 'nombres')
 
-    return render(request, 'web/panel_especialista.html', {'citas': citas})
+    return render(request, 'web/panel_pacientes.html', {
+        'pacientes': pacientes,
+        'es_especialista': True,
+        'form': BusquedaPacienteForm()
+    })
+
+
 
 
 
@@ -106,8 +105,12 @@ def ver_historia(request, paciente_id):
 @login_required
 def panel_pacientes(request):
     pacientes = Paciente.objects.all().order_by('apellidos', 'nombres')
-    return render(request, 'web/panel_pacientes.html', {'pacientes': pacientes})
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
 
+    return render(request, 'web/panel_pacientes.html', {
+        'pacientes': pacientes,
+        'es_administrador': es_administrador
+    })
 
 @login_required
 def logout_view(request):
@@ -252,10 +255,14 @@ def buscar_paciente(request):
             Q(documento_id__icontains=q)
         ).order_by('apellidos', 'nombres')
 
-    return render(request, 'web/buscar_paciente.html', {
-        'form': form,
-        'pacientes': pacientes
+    return render(request, 'web/panel_pacientes.html', {
+        'pacientes': pacientes,
+        'busqueda': True,
+        'form': form  # ✅ necesario para que {{ form.query }} funcione
     })
+
+
+
 
 
 def registro_paciente(request):
@@ -358,15 +365,25 @@ def panel_citas(request):
 # Crear la URL y vista para mostrar la malla
 # -------------------
 
+from django.utils import timezone
+
 @login_required
 def malla_disponibilidad_paciente(request):
-    paciente = get_object_or_404(Paciente, user=request.user)
     tratamiento_id = request.GET.get('tratamiento')
     odontologo_id = request.GET.get('odontologo')
+    reprogramar_id = request.GET.get('reprogramar')
 
     tratamiento = Tratamiento.objects.filter(id=tratamiento_id).first()
     odontologo = Odontologo.objects.filter(id=odontologo_id).first()
-    reprogramar_id = request.GET.get('reprogramar')  # viene si estamos reprogramando
+
+    # Obtener el paciente según el rol
+    if request.user.groups.filter(name='Pacientes').exists():
+        paciente = get_object_or_404(Paciente, user=request.user)
+    elif reprogramar_id:
+        cita = get_object_or_404(Cita, id=reprogramar_id)
+        paciente = cita.paciente
+    else:
+        return redirect('landing')
 
     if not tratamiento or not odontologo:
         messages.error(request, "Debes seleccionar primero tratamiento y odontólogo.")
@@ -386,13 +403,14 @@ def malla_disponibilidad_paciente(request):
     hasta = desde + 12
     dias_mostrados = dias_disponibles[desde:hasta]
 
-    # Cargar todas las citas de esos días
+    # Cargar todas las citas pendientes de esos días
     citas = Cita.objects.filter(
         fecha_hora__date__in=dias_mostrados,
         estado='P'
     ).values_list('fecha_hora', 'cabina')
 
     citas_ocupadas = set((fecha.replace(second=0, microsecond=0), cabina) for fecha, cabina in citas)
+
     malla = []
     for dia in dias_mostrados:
         bloques_disponibles = []
@@ -425,6 +443,7 @@ def malla_disponibilidad_paciente(request):
         'paciente': paciente,
     })
 
+
 @login_required
 def guardar_cita_paciente(request):
     if request.method == 'POST':
@@ -435,7 +454,15 @@ def guardar_cita_paciente(request):
         odontologo_id = request.POST.get('odontologo_id')
         reprogramar_id = request.POST.get('reprogramar_id')
 
-        paciente = Paciente.objects.filter(user=request.user).first()
+        # Detectar al paciente correctamente según el flujo
+        if request.user.groups.filter(name='Pacientes').exists():
+            paciente = Paciente.objects.filter(user=request.user).first()
+        elif reprogramar_id:
+            cita_origen = get_object_or_404(Cita, id=reprogramar_id)
+            paciente = cita_origen.paciente
+        else:
+            return redirect('landing')
+
         tratamiento = Tratamiento.objects.filter(id=tratamiento_id).first()
         odontologo = Odontologo.objects.filter(id=odontologo_id).first()
         clinica = paciente.clinica_creacion if paciente else None
@@ -451,7 +478,7 @@ def guardar_cita_paciente(request):
             messages.error(request, "Formato de fecha u hora inválido.")
             return redirect('malla_disponibilidad_paciente')
 
-        # Validar que la franja no esté ocupada
+        # Validar que la franja no esté ocupada (excepto si reprograma la misma)
         if Cita.objects.filter(fecha_hora=fecha_hora, cabina=int(cabina)).exclude(id=reprogramar_id).exists():
             messages.warning(request, "Ese espacio ya fue reservado. Por favor elige otro.")
             return redirect('malla_disponibilidad_paciente')
@@ -463,7 +490,6 @@ def guardar_cita_paciente(request):
             cita.save()
             request.session['reprogramada'] = True
             messages.success(request, "✅ Tu cita ha sido reprogramada con éxito.")
-
         else:
             Cita.objects.create(
                 paciente=paciente,
@@ -478,7 +504,10 @@ def guardar_cita_paciente(request):
             request.session['cita_creada'] = True
             messages.success(request, "✅ Cita agendada exitosamente.")
 
-        return redirect('panel_paciente')
+        if request.user.groups.filter(name='Pacientes').exists():
+            return redirect('panel_paciente')
+        else:
+            return redirect('panel_pacientes')
 
 
 # -------------------
@@ -518,13 +547,25 @@ def panel_paciente(request):
 
 @login_required
 def reprogramar_cita_paciente(request, cita_id):
-    # Validar que la cita pertenece al paciente autenticado y está pendiente
-    cita = get_object_or_404(Cita, id=cita_id, paciente__user=request.user, estado='P')
+    """
+    Permite reprogramar una cita pendiente ('P').
+
+    - Si el usuario es del grupo 'Pacientes', solo puede reprogramar su propia cita pendiente.
+    - Si el usuario es del staff (Administrador o Especialista), puede reprogramar cualquier cita pendiente.
+    - Citas terminadas ('T') no pueden ser reprogramadas, ni siquiera accediendo manualmente por URL.
+    """
+
+    if request.user.groups.filter(name='Pacientes').exists():
+        # El paciente solo puede acceder a su propia cita pendiente
+        cita = get_object_or_404(Cita, id=cita_id, paciente__user=request.user, estado='P')
+    else:
+        # Admin o especialista puede acceder a cualquier cita pendiente
+        cita = get_object_or_404(Cita, id=cita_id, estado='P')
 
     tratamiento_id = cita.tratamiento.id
     odontologo_id = cita.odontologo.id
 
-    # Redirigir a la malla pasando además el ID de la cita a reprogramar
+    # Redirigir a la malla con los datos necesarios para reprogramación
     return redirect(f"/panel/paciente/malla-disponible/?tratamiento={tratamiento_id}&odontologo={odontologo_id}&reprogramar={cita.id}")
 
 # -------------------
@@ -577,10 +618,14 @@ def ver_panel_paciente_admin(request, paciente_id):
     # Obtener última cita del paciente
     ultima_cita = Cita.objects.filter(paciente=paciente).order_by('-fecha_hora').first()
 
+    es_administrador = request.user.groups.filter(name='Administrador').exists()
+
     return render(request, 'web/panel_paciente.html', {
         'paciente': paciente,
         'ultima_cita': ultima_cita,
-        'cita_reprogramada': False,  # No hay reprogramación desde admin
+        'cita_reprogramada': False,
         'citas': [ultima_cita] if ultima_cita else [],
-        'acceso_admin': True,  # opcional si quieres ajustar la plantilla
+        'acceso_admin': True,
+        'es_administrador': es_administrador
     })
+
