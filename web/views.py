@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.crypto import get_random_string
 from .forms import BusquedaPacienteForm
+from django.utils.formats import date_format 
 
 from .forms import (
     LoginForm,
@@ -107,10 +108,15 @@ def panel_pacientes(request):
     pacientes = Paciente.objects.all().order_by('apellidos', 'nombres')
     es_administrador = request.user.groups.filter(name='Administrador').exists()
 
+    # Extraer y eliminar el mensaje de reprogramación si existe
+    reprogramada = request.session.pop('reprogramada', None)
+
     return render(request, 'web/panel_pacientes.html', {
         'pacientes': pacientes,
-        'es_administrador': es_administrador
+        'es_administrador': es_administrador,
+        'reprogramada': reprogramada,
     })
+
 
 @login_required
 def logout_view(request):
@@ -488,7 +494,17 @@ def guardar_cita_paciente(request):
             cita.fecha_hora = fecha_hora
             cita.cabina = int(cabina)
             cita.save()
-            request.session['reprogramada'] = True
+
+            # ✅ Fecha traducida al español
+            request.session['reprogramada'] = {
+                'paciente': f"{paciente.nombres} {paciente.apellidos}",
+                'fecha': date_format(cita.fecha_hora, "l d/m/Y", use_l10n=True),
+                'hora': cita.fecha_hora.strftime("%I:%M %p").lstrip("0"),
+                'odontologo': cita.odontologo.nombre,
+                'tratamiento': cita.tratamiento.nombre,
+                'cabina': cita.cabina,
+            }
+
             messages.success(request, "✅ Tu cita ha sido reprogramada con éxito.")
         else:
             Cita.objects.create(

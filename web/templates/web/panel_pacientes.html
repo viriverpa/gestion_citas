@@ -4,6 +4,20 @@
 
 {% block content %}
 <div class="container py-4">
+
+    {% if reprogramada %}
+    <div class="alert alert-success shadow-sm mb-4">
+        <h5 class="fw-bold">✅ Cita reprogramada</h5>
+        <p class="mb-1"><strong>Paciente:</strong> {{ reprogramada.paciente }}</p>
+        <p class="mb-1"><strong>Fecha:</strong> {{ reprogramada.fecha }}</p>
+        <p class="mb-1"><strong>Hora:</strong> {{ reprogramada.hora }}</p>
+        <p class="mb-1"><strong>Odontólogo:</strong> {{ reprogramada.odontologo }}</p>
+        <p class="mb-1"><strong>Tratamiento:</strong> {{ reprogramada.tratamiento }}</p>
+        <p class="mb-0"><strong>Cabina:</strong> {{ reprogramada.cabina }}</p>
+    </div>
+    {% endif %}
+
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>
         {% if busqueda %}
