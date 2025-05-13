@@ -23,7 +23,7 @@
   <h1>Bienvenido, {{ paciente.nombres }} {{ paciente.apellidos }}</h1>
 
   {% if acceso_admin %}
-    <a href="{% url 'panel_pacientes' %}" class="btn btn-outline-secondary mb-3">⬅️ Volver al listado de pacientes</a>
+    <a href="{% url 'panel_pacientes' %}" class="btn btn-outline-azul btn-sm">⬅️ Volver al listado de pacientes</a>
   {% endif %}
 
   <div class="card mb-4">
@@ -60,7 +60,7 @@
 
         <div class="d-flex gap-2 mt-3">
           <button class="btn btn-secondary" disabled>Ya tienes una cita pendiente</button>
-          <a href="{% url 'reprogramar_cita_paciente' cita_id=ultima_cita.id %}" class="btn btn-outline-warning">🔁 Reprogramar</a>
+          <a href="{% url 'reprogramar_cita_paciente' cita_id=ultima_cita.id %}" class="btn btn-outline-azul btn-sm">🔁 Reprogramar</a>
         </div>
       </div>
     </div>
