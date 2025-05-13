@@ -32,7 +32,7 @@ from citas.models import (
 
 def landing(request):
     if request.user.is_authenticated:
-        logout(request)  # Solo cierra sesión si ya estaba logueado
+        logout(request)
 
     form = LoginForm()
 
@@ -47,11 +47,7 @@ def landing(request):
                 login(request, user)
                 grupos = list(user.groups.values_list('name', flat=True))
 
-                # ✅ Saludo opcional para mostrar en panel_admin si se desea
-                if user.first_name or user.last_name:
-                    nombre = f"{user.first_name} {user.last_name}".strip()
-                else:
-                    nombre = user.username
+                nombre = f"{user.first_name} {user.last_name}".strip() or user.username
 
                 if 'Administrador' in grupos:
                     request.session['saludo'] = f"👨‍💼 Bienvenido Administrador: {nombre}"
@@ -59,7 +55,7 @@ def landing(request):
 
                 elif 'Especialistas' in grupos:
                     request.session['saludo'] = f"🦷 Bienvenido Dr. {nombre}"
-                    return redirect('panel_admin')
+                    return redirect('panel_admin')  # o 'mis_pacientes_agendados' si decides redirigir allí
 
                 elif 'Pacientes' in grupos:
                     return redirect('panel_paciente')
@@ -72,16 +68,16 @@ def landing(request):
 
     return render(request, 'web/landing.html', {'form': form})
 
+
 @login_required
 def panel_admin(request):
     grupos = list(request.user.groups.values_list('name', flat=True))
 
-    saludo = request.session.pop('saludo', None)  # ✅ Recupera y borra el saludo
+    saludo = request.session.get('saludo')  # ✅ Usar .get en lugar de .pop
     return render(request, 'web/panel_admin.html', {
         'grupos': grupos,
         'saludo': saludo,
     })
-
 
 
 @login_required
@@ -682,8 +678,13 @@ def mis_pacientes_agendados(request):
         cita__fecha_hora__gte=timezone.now()
     ).distinct().order_by('apellidos', 'nombres')
 
+    saludo = request.session.pop('saludo', None)  # ✅ Extraer saludo de sesión
+
     return render(request, 'web/panel_pacientes.html', {
         'pacientes': pacientes,
         'especialista': True,
-        'es_administrador': False,  # para ocultar botones de edición
+        'es_administrador': False,
+        'saludo': saludo,  # ✅ Pasar el saludo al template
     })
+
+

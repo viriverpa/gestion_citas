@@ -4,8 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Panel de Especialista - Dentotis</title>
+
+  <!-- Bootstrap + íconos -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- ✅ Estilos personalizados -->
+  <link href="{% static 'css/styles.css' %}" rel="stylesheet">
 
   <style>
     body {
@@ -14,7 +19,7 @@
     .navbar {
       background-color: #0072CE;
     }
-    .navbar-brand, .nav-link, .btn {
+    .navbar-brand, .nav-link {
       color: white;
     }
     .cita-card {
@@ -39,8 +44,16 @@
 <div class="container py-4">
   <div class="mb-4">
     <h2 class="fw-bold">📋 Mis Citas Programadas</h2>
+
+    {% if saludo %}
+    <div class="alert alert-info alert-dismissible fade show mt-2" role="alert">
+      {{ saludo }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    {% endif %}
+
     <p class="text-muted">👨‍⚕️ Especialista: <strong>{{ request.user.first_name }} {{ request.user.last_name }}</strong></p>
-    <a href="{% url 'panel_admin' %}" class="btn btn-outline-primary">⬅️ Volver al Panel</a>
+    <a href="{% url 'panel_admin' %}" class="btn btn-outline-azul btn-sm">⬅️ Volver al Panel</a>
   </div>
 
   {% if citas %}

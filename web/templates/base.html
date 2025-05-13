@@ -4,7 +4,6 @@
 <head>
     {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    {% load static %}
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
     <meta charset="UTF-8">
     <title>{% block title %}Clínica Odontológica Dentotis{% endblock %}</title>
@@ -27,7 +26,7 @@
                     {% if g.name == "Pacientes" %}
                         <a class="navbar-brand" href="{% url 'panel_paciente' %}">👤 Mi Panel</a>
                     {% elif g.name == "Especialistas" %}
-                        <a class="navbar-brand" href="{% url 'panel_especialista' %}">🦷 Panel Especialista</a>
+                        <a class="navbar-brand" href="{% url 'panel_admin' %}">🦷 Panel Especialista</a>
                     {% elif g.name == "Administrador" %}
                         <a class="navbar-brand" href="{% url 'panel_admin' %}">🛠 Panel Admin</a>
                     {% endif %}
@@ -41,12 +40,21 @@
                 {% csrf_token %}
                 <button type="submit" class="btn btn-outline-light">Cerrar Sesión</button>
             </form>
-              
         </div>
     </div>
 </nav>
 
 <main class="container mt-4">
+    <!-- ✅ Mostrar saludo de sesión -->
+    {% if request.session.saludo %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ request.session.saludo }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        {# NOTA: El saludo se limpiará desde la vista al redirigir si es necesario #}
+    {% endif %}
+
+    <!-- ✅ Mostrar mensajes de Django -->
     {% if messages and not mensaje_exito %}
         {% for message in messages %}
             <div class="alert alert-success alert-dismissible fade show" role="alert">

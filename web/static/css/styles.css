@@ -40,7 +40,7 @@
 .btn-outline-azul:hover,
 .btn-outline-azul:focus,
 .btn-outline-azul:active {
-    background-color: #e7f1ff !important;    /* Azul claro */
+    background-color: #e2ebf8 !important;    /* Azul claro */
     color: #084298 !important;               /* Azul fuerte */
     border-color: #084298 !important;
 }

@@ -1,4 +1,3 @@
-# web/urls.py
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
@@ -16,19 +15,18 @@ urlpatterns = [
     # Paneles según rol
     # -------------------
     path('panel/', views.panel_admin, name='panel_admin'),
-    path('especialista/', views.panel_especialista, name='panel_especialista'),
     path('panel/paciente/', views.panel_paciente, name='panel_paciente'),
     path('panel/paciente/crear-cita/', views.crear_cita_paciente, name='crear_cita_paciente'),
+    path('especialista/', views.panel_especialista, name='panel_especialista'),
+    path('especialista/mis-pacientes/', views.mis_pacientes_agendados, name='mis_pacientes_agendados'),
 
     # -------------------
     # Gestión de pacientes
     # -------------------
     path('pacientes/', views.panel_pacientes, name='panel_pacientes'),
     path('pacientes/nuevo/', views.crear_paciente, name='crear_paciente'),
-    path('editar-perfil/', views.editar_paciente, name='editar_paciente'), # Paciente edita su perfil
-    path('editar-paciente/<int:pk>/', views.editar_paciente, name='editar_paciente_admin'), # Admin/especialista
-    path('especialista/mis-pacientes/', views.mis_pacientes_agendados, name='mis_pacientes_agendados'),
-
+    path('editar-perfil/', views.editar_paciente, name='editar_paciente'),
+    path('editar-paciente/<int:pk>/', views.editar_paciente, name='editar_paciente_admin'),
 
     # -------------------
     # Historia clínica y tratamiento
@@ -42,12 +40,13 @@ urlpatterns = [
     # -------------------
     # Citas
     # -------------------
+    path('citas/', views.panel_citas, name='panel_citas'),
     path('cita/<int:cita_id>/atendida/', views.marcar_cita_atendida, name='marcar_cita_atendida'),
     path('panel/paciente/guardar-cita/', views.guardar_cita_paciente, name='guardar_cita_paciente'),
     path('pacientes/<int:paciente_id>/crear-cita/', views.crear_cita_admin, name='crear_cita_admin'),
     path('pacientes/<int:paciente_id>/cita/', views.ver_panel_paciente_admin, name='ver_panel_paciente_admin'),
-    path('citas/', views.panel_citas, name='panel_citas'),
     path('panel/paciente/reprogramar/<int:cita_id>/', views.reprogramar_cita_paciente, name='reprogramar_cita_paciente'),
+    path('panel/paciente/malla-disponible/', views.malla_disponibilidad_paciente, name='malla_disponibilidad_paciente'),
 
     # -------------------
     # Búsqueda
@@ -76,12 +75,4 @@ urlpatterns = [
     path('recuperar-contrasena/completado/', auth_views.PasswordResetCompleteView.as_view(
         template_name='web/password_reset_complete.html',
     ), name='password_reset_complete'),
-    
-    # -------------------
-    #  Crear la URL y vista para mostrar la malla
-    # -------------------
-    
-    path('panel/paciente/malla-disponible/', views.malla_disponibilidad_paciente, name='malla_disponibilidad_paciente'),
-    
-
-]  
+]
