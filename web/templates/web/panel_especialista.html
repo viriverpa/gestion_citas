@@ -1,62 +1,80 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Panel Especialista</title>
+  <meta charset="UTF-8">
+  <title>Panel de Especialista - Dentotis</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-    <div class="text-end mb-3">
-        <a href="/panel/" class="btn btn-volver">🔙 Volver al Panel</a>
-    </div>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f2f4f8;
-        }
-        .cita-card {
-            border-left: 5px solid #0d6efd;
-            background-color: #fff;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        }
-    </style>
+  <style>
+    body {
+      background-color: #f2f4f8;
+    }
+    .navbar {
+      background-color: #0072CE;
+    }
+    .navbar-brand, .nav-link, .btn {
+      color: white;
+    }
+    .cita-card {
+      border-left: 5px solid #0d6efd;
+      background-color: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+  </style>
 </head>
 <body>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Clínica Dentotis</a>
+    <form method="post" action="{% url 'logout' %}" class="d-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-light">Cerrar Sesión</button>
+    </form>
+  </div>
+</nav>
+
 <div class="container py-4">
-    <div class="mb-4">
-        <h2 class="fw-bold">Citas pendientes asignadas: {{ pendientes_count }}</h2>
-        <p class="text-muted">👨‍⚕️ Dr. {{ request.user.username }}</p>
+  <div class="mb-4">
+    <h2 class="fw-bold">📋 Mis Citas Programadas</h2>
+    <p class="text-muted">👨‍⚕️ Especialista: <strong>{{ request.user.first_name }} {{ request.user.last_name }}</strong></p>
+    <a href="{% url 'panel_admin' %}" class="btn btn-outline-primary">⬅️ Volver al Panel</a>
+  </div>
+
+  {% if citas %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for cita in citas %}
+      <div class="col">
+        <div class="card cita-card p-3">
+          <h5 class="mb-1">{{ cita.paciente.nombres }} {{ cita.paciente.apellidos }}</h5>
+          <p class="mb-1"><strong>Tratamiento:</strong> {{ cita.tratamiento.nombre }}</p>
+          <p class="mb-1"><strong>Fecha:</strong> {{ cita.fecha_hora|date:"l d/m/Y" }}</p>
+          <p class="mb-2"><strong>Hora:</strong> {{ cita.fecha_hora|time:"g:i A" }}</p>
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'ver_historia' cita.paciente.id %}" class="btn btn-outline-azul btn-sm">
+              📘 Ver historia
+            </a>
+            <form action="{% url 'marcar_cita_atendida' cita.id %}" method="post" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn {% if cita.estado == 'T' %}btn-secondary{% else %}btn-success{% endif %} btn-sm">
+                {% if cita.estado == 'T' %}Atendida{% else %}Pendiente{% endif %}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-    {% if citas %}
-        <div class="row row-cols-1 row-cols-md-2 g-4">
-            {% for cita in citas %}
-            <div class="col">
-                <div class="card cita-card p-3">
-                    <h5 class="mb-1">{{ cita.paciente.nombre }}</h5>
-                    <p class="mb-1"><strong>Tratamiento:</strong> {{ cita.tratamiento.nombre }}</p>
-		    <p class="mb-2"><strong>Fecha:</strong> {{ cita.fecha_hora|date:"l, j F Y" }}</p>
-		    <p class="mb-2"><strong>Hora:</strong> {{ cita.fecha_hora|time:"g:i a" }}</p>
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'ver_historia' cita.paciente.id %}" class="btn btn-outline-primary btn-sm">
-                            📘 Ver historia
-                        </a>
-                        <form action="{% url 'marcar_cita_atendida' cita.id %}" method="post" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn {% if cita.estado == 'T' %}btn-secondary{% else %}btn-success{% endif %} btn-sm">
-                                {% if cita.estado == 'T' %}Atendida{% else %}Pendiente{% endif %}
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    {% else %}
-
-
-        <div class="alert alert-info text-center">
-            No hay citas programadas para hoy.
-        </div>
-    {% endif %}
+  {% else %}
+    <div class="alert alert-info text-center">
+      No hay citas programadas actualmente.
+    </div>
+  {% endif %}
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

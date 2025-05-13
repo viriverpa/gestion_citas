@@ -27,6 +27,8 @@ urlpatterns = [
     path('pacientes/nuevo/', views.crear_paciente, name='crear_paciente'),
     path('editar-perfil/', views.editar_paciente, name='editar_paciente'), # Paciente edita su perfil
     path('editar-paciente/<int:pk>/', views.editar_paciente, name='editar_paciente_admin'), # Admin/especialista
+    path('especialista/mis-pacientes/', views.mis_pacientes_agendados, name='mis_pacientes_agendados'),
+
 
     # -------------------
     # Historia clínica y tratamiento

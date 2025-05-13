@@ -11,6 +11,7 @@ from django.utils.timezone import now
 from django.utils.crypto import get_random_string
 from .forms import BusquedaPacienteForm
 from django.utils.formats import date_format 
+from datetime import datetime, timedelta, time
 
 from .forms import (
     LoginForm,
@@ -28,14 +29,10 @@ from citas.models import (
     Tratamiento,
 )
 
-#from .models import HorarioAtencion  # Solo si usas este modelo
-
-from datetime import datetime, timedelta, time
-
 
 def landing(request):
     if request.user.is_authenticated:
-        logout(request)  # Solo cierra sesión si ya está logueado
+        logout(request)  # Solo cierra sesión si ya estaba logueado
 
     form = LoginForm()
 
@@ -50,12 +47,23 @@ def landing(request):
                 login(request, user)
                 grupos = list(user.groups.values_list('name', flat=True))
 
+                # ✅ Saludo opcional para mostrar en panel_admin si se desea
+                if user.first_name or user.last_name:
+                    nombre = f"{user.first_name} {user.last_name}".strip()
+                else:
+                    nombre = user.username
+
                 if 'Administrador' in grupos:
+                    request.session['saludo'] = f"👨‍💼 Bienvenido Administrador: {nombre}"
                     return redirect('panel_admin')
+
                 elif 'Especialistas' in grupos:
-                    return redirect('panel_especialista')
+                    request.session['saludo'] = f"🦷 Bienvenido Dr. {nombre}"
+                    return redirect('panel_admin')
+
                 elif 'Pacientes' in grupos:
                     return redirect('panel_paciente')
+
                 else:
                     logout(request)
                     form.add_error(None, 'Este usuario no tiene un rol asignado.')
@@ -63,22 +71,34 @@ def landing(request):
                 form.add_error(None, 'Documento o contraseña incorrectos.')
 
     return render(request, 'web/landing.html', {'form': form})
+
 @login_required
 def panel_admin(request):
-    grupos = request.user.groups.values_list('name', flat=True)
-    return render(request, 'web/panel_admin.html', {'grupos': grupos})
+    grupos = list(request.user.groups.values_list('name', flat=True))
+
+    saludo = request.session.pop('saludo', None)  # ✅ Recupera y borra el saludo
+    return render(request, 'web/panel_admin.html', {
+        'grupos': grupos,
+        'saludo': saludo,
+    })
+
 
 
 @login_required
 def panel_especialista(request):
-    pacientes = Paciente.objects.all().order_by('apellidos', 'nombres')
+    hoy = now().date()
 
-    return render(request, 'web/panel_pacientes.html', {
-        'pacientes': pacientes,
-        'es_especialista': True,
-        'form': BusquedaPacienteForm()
+    # Obtener las citas futuras del especialista autenticado
+    citas = Cita.objects.filter(
+        odontologo__user=request.user,
+        fecha_hora__date__gte=hoy,
+        estado='P'
+    ).order_by('fecha_hora')
+
+    return render(request, 'web/panel_especialista.html', {
+        'citas': citas,
+        'pendientes_count': citas.count()
     })
-
 
 
 
@@ -645,3 +665,25 @@ def ver_panel_paciente_admin(request, paciente_id):
         'es_administrador': es_administrador
     })
 
+# -------------------
+#Ver solo los mis citas de Paciente
+# -------------------
+
+@login_required
+def mis_pacientes_agendados(request):
+    especialista = Odontologo.objects.filter(user=request.user).first()
+    if not especialista:
+        messages.warning(request, "No tienes pacientes asignados aún.")
+        return redirect('panel_admin')
+
+    # Obtener pacientes únicos con citas futuras asignadas a este odontólogo
+    pacientes = Paciente.objects.filter(
+        cita__odontologo=especialista,
+        cita__fecha_hora__gte=timezone.now()
+    ).distinct().order_by('apellidos', 'nombres')
+
+    return render(request, 'web/panel_pacientes.html', {
+        'pacientes': pacientes,
+        'especialista': True,
+        'es_administrador': False,  # para ocultar botones de edición
+    })
