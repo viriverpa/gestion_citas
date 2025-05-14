@@ -24,18 +24,16 @@
                     <h5>{{ paciente.nombres }} {{ paciente.apellidos }}</h5>
                     <p><strong>Documento:</strong> {{ paciente.documento_id }}</p>
                     <p><strong>Email:</strong> {{ paciente.email|default:"No registrado" }}</p>
-
                     <div class="d-flex gap-2 mt-2">
-                        <a href="/pacientes/{{ paciente.id }}/editar" class="btn btn-outline-primary btn-sm">Editar</a>
-                        <a href="/historia/{{ paciente.id }}/" class="btn btn-outline-info btn-sm">Historia</a>
+                        <a href="/pacientes/{{ paciente.id }}/editar" class="btn btn-outline-azul btn-sm">✏️ Editar</a>
+                        <a href="/historia/{{ paciente.id }}/" class="btn btn-outline-info btn-sm">📘 Historia</a>
                         {% with citas_pendientes|get_item:paciente.id as cita %}
-                        {% if cita %}
-                            <a href="{% url 'ver_panel_paciente_admin' paciente.id %}" class="btn btn-outline-success btn-sm">Ver cita</a>
-                        {% else %}
-                            <a href="{% url 'crear_cita_admin' paciente.id %}" class="btn btn-outline-warning btn-sm">Crear cita</a>
-                        {% endif %}
+                            {% if cita %}
+                                <a href="{% url 'ver_panel_paciente_admin' paciente.id %}" class="btn btn-outline-success btn-sm">📅 Ver cita</a>
+                            {% else %}
+                                <a href="{% url 'crear_cita_admin' paciente.id %}" class="btn btn-outline-warning btn-sm">➕ Crear cita</a>
+                            {% endif %}
                         {% endwith %}
-
                     </div>
                 </div>
             </div>
