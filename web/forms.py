@@ -4,10 +4,6 @@ from django import forms
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
 from citas.models import Paciente
-from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from citas.models import Paciente
-from citas.models import HistoriaClinica
 
 class LoginForm(forms.Form):
     documento = forms.CharField(
@@ -21,15 +17,17 @@ class LoginForm(forms.Form):
 class PacienteEditForm(forms.ModelForm):
     class Meta:
         model = Paciente
-        exclude = ['user', 'documento_id', 'clinica_creacion']
+        fields = ['nombre', 'documento_id', 'email', 'pais', 'telefono']
         widgets = {
-            'nombres': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombres'}),
-            'apellidos': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellidos'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre completo'}),
+            'documento_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número de documento'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
             'pais': forms.Select(attrs={'class': 'form-select'}),
-            'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono (sin código de país)'}),
         }
 
+from django import forms
+from citas.models import HistoriaClinica
 
 class HistoriaClinicaForm(forms.ModelForm):
     class Meta:
@@ -50,34 +48,3 @@ class BusquedaPacienteForm(forms.Form):
             'placeholder': 'Nombre o documento...'
         })
     )
-
-
-from citas.models import Clinica  # asegúrate de tener esto al inicio del archivo
-
-class PacienteForm(forms.ModelForm):
-    class Meta:
-        model = Paciente
-        fields = ['nombres', 'apellidos', 'documento_id', 'email', 'pais', 'telefono', 'clinica_creacion']
-        widgets = {
-            'nombres': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombres'}),
-            'apellidos': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellidos'}),
-            'documento_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número de documento'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
-            'pais': forms.Select(attrs={'class': 'form-select'}),
-            'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono (sin código de país)'}),
-            'clinica_creacion': forms.Select(attrs={'class': 'form-select'}),
-        }
-
-    def clean_documento_id(self):
-        documento = self.cleaned_data.get('documento_id')
-        if Paciente.objects.filter(documento_id=documento).exists():
-            raise ValidationError("Ya existe un paciente con esa cédula.")
-        return documento
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if Paciente.objects.filter(email=email).exists():
-            raise ValidationError("Ya existe un paciente con este correo.")
-        if User.objects.filter(email=email).exists():
-            raise ValidationError("Este correo ya está registrado como usuario.")
-        return email
