@@ -1,11 +1,48 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
+
 
 {% block content %}
 <div class="container mt-4" style="max-width: 600px;">
   <h2 class="mb-4">Crear nueva cuenta</h2>
+
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+
+    <div class="mb-3">
+      <label for="nombres" class="form-label">Nombres</label>
+      {{ form.nombres|add_class:"form-control" }}
+    </div>
+
+    <div class="mb-3">
+      <label for="apellidos" class="form-label">Apellidos</label>
+      {{ form.apellidos|add_class:"form-control" }}
+    </div>
+
+    <div class="mb-3">
+      <label for="documento_id" class="form-label">Número de documento</label>
+      {{ form.documento_id|add_class:"form-control" }}
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Correo electrónico</label>
+      {{ form.email|add_class:"form-control" }}
+    </div>
+
+    <div class="mb-3">
+      <label for="pais" class="form-label">País</label>
+      {{ form.pais|add_class:"form-select" }}
+    </div>
+
+    <div class="mb-3">
+      <label for="telefono" class="form-label">Teléfono</label>
+      {{ form.telefono|add_class:"form-control" }}
+    </div>
+
+    <div class="mb-3">
+      <label for="clinica_creacion" class="form-label">Clínica donde deseas ser atendido</label>
+      {{ form.clinica_creacion|add_class:"form-select" }}
+    </div>
 
     <button type="submit" class="btn btn-success">Registrarse</button>
     <a href="{% url 'landing' %}" class="btn btn-secondary">Cancelar</a>
