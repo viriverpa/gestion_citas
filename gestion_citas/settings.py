@@ -124,8 +124,12 @@ USE_TZ = True
 # ARCHIVOS ESTÁTICOS
 # ------------------------------
 STATIC_URL = '/static/'
+# Eliminamos la entrada 'web/static' ya que 'web' está en INSTALLED_APPS
+# y Django ya busca automáticamente en su carpeta static/.
+# Si tienes otros directorios de estáticos a nivel de proyecto (no dentro de una app),
+# deberías listarlos aquí, pero si no, la lista queda vacía.
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'web/static'),
+    # os.path.join(BASE_DIR, 'nombre_de_otra_carpeta_estatica_del_proyecto'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
