@@ -1,5 +1,0 @@
-[phases]
-build.cmds = ["python manage.py collectstatic --noinput"] # Corrección aquí: usar build.cmds = [...]
-
-[start]
-cmd = "gunicorn gestion_citas.wsgi:application --bind 0.0.0.0:$PORT" # Verifica que este comando sea correcto
