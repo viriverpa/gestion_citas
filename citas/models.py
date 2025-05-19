@@ -1,10 +1,16 @@
 from django.db import models
-from django_countries.fields import CountryField
 from django.contrib.auth.models import User
+from django_countries.fields import CountryField
 
-from django.db import models
-from django.contrib.auth.models import User
-from django_countries.fields import CountryField
+
+class Clinica(models.Model):
+    nombre = models.CharField(max_length=100)
+    direccion = models.CharField(max_length=255)
+    telefono = models.CharField(max_length=20, blank=True)
+
+    def __str__(self):
+        return self.nombre
+
 
 class Paciente(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -16,18 +22,20 @@ class Paciente(models.Model):
         max_length=20,
         help_text="Escribe el número sin el código del país. Ej: 3001234567"
     )
+    clinica_creacion = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.nombre} ({self.documento_id})"
 
+
 class Odontologo(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)  # NUEVA LÍNEA
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nombre = models.CharField(max_length=100)
     especialidad = models.CharField(max_length=100)
+    clinica_asignada = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.nombre} ({self.especialidad})"
-
 
 
 class Tratamiento(models.Model):
@@ -37,10 +45,12 @@ class Tratamiento(models.Model):
     def __str__(self):
         return f"{self.nombre} ({self.duracion} min)"
 
+
 class Cita(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     odontologo = models.ForeignKey(Odontologo, on_delete=models.CASCADE)
     tratamiento = models.ForeignKey(Tratamiento, on_delete=models.SET_NULL, null=True)
+    clinica = models.ForeignKey(Clinica, on_delete=models.SET_NULL, null=True, blank=True)
     fecha_hora = models.DateTimeField()
     motivo_consulta = models.TextField(blank=True)
 
@@ -49,6 +59,7 @@ class Cita(models.Model):
         ('T', 'Terminada'),
     ]
     estado = models.CharField(max_length=1, choices=ESTADOS_CITA, default='P')
+    cabina = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.paciente.nombre} - {self.tratamiento.nombre} ({self.fecha_hora})"
@@ -62,6 +73,7 @@ class HorarioAtencion(models.Model):
     def __str__(self):
         return f"Día {self.dia_semana}: {self.hora_inicio} - {self.hora_fin}"
 
+
 class HistoriaClinica(models.Model):
     paciente = models.OneToOneField(Paciente, on_delete=models.CASCADE)
     antecedentes = models.TextField(blank=True)
@@ -71,6 +83,7 @@ class HistoriaClinica(models.Model):
 
     def __str__(self):
         return f"Historia Clínica de {self.paciente.nombre}"
+
 
 class FotoTratamiento(models.Model):
     historia_clinica = models.ForeignKey(HistoriaClinica, on_delete=models.CASCADE, related_name='fotos')

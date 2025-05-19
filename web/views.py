@@ -29,6 +29,7 @@ from citas.models import (
     Paciente,
     Odontologo,
     Tratamiento,
+    Clinica,
 )
 
 
