@@ -51,6 +51,8 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000 # Activar HSTS (HTTP Strict Transport Security) por 1 año
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True # Aplicar HSTS también a subdominios
     # SECURE_HSTS_PRELOAD = True # Activar HSTS Preload (requiere registro y precargado en navegadores - habilitar solo después de probar y si planeas registrar)
+    # Añadir esta línea para que Django confíe en el encabezado X-Forwarded-Proto del proxy
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # <-- ¡Añadir esta línea!
 
 
 # ------------------------------
