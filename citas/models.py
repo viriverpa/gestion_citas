@@ -82,8 +82,7 @@ class HistoriaClinica(models.Model):
     observaciones = models.TextField(blank=True)
 
     def __str__(self):
-        return f"Historia Clínica de {self.paciente.nombre}"
-
+        return f"Historia Clínica de {self.paciente.nombres} {self.paciente.apellidos}"
 
 class FotoTratamiento(models.Model):
     historia_clinica = models.ForeignKey(HistoriaClinica, on_delete=models.CASCADE, related_name='fotos')
